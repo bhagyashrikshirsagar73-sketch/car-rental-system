@@ -1,0 +1,2550 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DriveLux — Premium Car Rental & Fleet Management</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              black: '#090A0F',
+              navy: '#0F111A',
+              card: '#161926',
+              cardHover: '#1E2336',
+              border: '#262B40',
+              primary: '#6366F1',
+              primaryHover: '#4F46E5',
+              purple: '#A855F7',
+              cyan: '#06B6D4',
+              gold: '#F59E0B'
+            }
+          },
+          backgroundImage: {
+            'luxury-gradient': 'linear-gradient(135deg, #6366F1 0%, #A855F7 100%)',
+            'radial-glow': 'radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.25) 0%, rgba(9, 10, 15, 0) 70%)',
+            'glass-card': 'linear-gradient(180deg, rgba(22, 25, 38, 0.75) 0%, rgba(15, 17, 26, 0.85) 100%)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #090A0F;
+      color: #F3F4F6;
+      overflow-x: hidden;
+    }
+    
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #090A0F;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #262B40;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #6366F1;
+    }
+
+    .glass-nav {
+      background: rgba(15, 17, 26, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(38, 43, 64, 0.7);
+    }
+
+    .glass-panel {
+      background: rgba(22, 25, 38, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid #262B40;
+    }
+
+    .glow-border:hover {
+      border-color: rgba(99, 102, 241, 0.6);
+      box-shadow: 0 0 25px -5px rgba(99, 102, 241, 0.3);
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.2; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.08); }
+    }
+    .animate-pulse-glow {
+      animation: pulseGlow 7s ease-in-out infinite;
+    }
+    
+    @media print {
+      body * { visibility: hidden; }
+      #printableReceipt, #printableReceipt * { visibility: visible; }
+      #printableReceipt {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: white !important;
+        color: black !important;
+      }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body class="selection:bg-brand-primary selection:text-white">
+
+  <!-- Floating Ambient Backdrops -->
+  <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[550px] bg-brand-primary/15 rounded-full blur-[140px] pointer-events-none -z-10 animate-pulse-glow"></div>
+  <div class="fixed top-[40%] right-[-10%] w-[600px] h-[600px] bg-brand-purple/10 rounded-full blur-[160px] pointer-events-none -z-10"></div>
+
+  <!-- TOAST NOTIFICATIONS CONTAINER -->
+  <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+  <!-- ================= NAVIGATION ================= -->
+  <header class="sticky top-0 z-40 glass-nav transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        
+        <!-- Logo -->
+        <a href="#" class="flex items-center gap-3 group">
+          <div class="w-10 h-10 rounded-xl bg-luxury-gradient flex items-center justify-center shadow-lg shadow-brand-primary/30 group-hover:scale-105 transition-transform">
+            <i data-lucide="shield-check" class="w-6 h-6 text-white"></i>
+          </div>
+          <div>
+            <span class="font-display text-2xl font-black tracking-wider text-white">DRIVE<span class="text-transparent bg-clip-text bg-luxury-gradient">LUX</span></span>
+            <span class="block text-[9px] uppercase tracking-[0.25em] text-gray-400 font-bold -mt-1">PREMIUM FLEET</span>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-gray-300">
+          <a href="#hero" class="hover:text-white transition-colors">Home</a>
+          <a href="#fleet" class="hover:text-white transition-colors">Explore Fleet</a>
+          <a href="#howItWorks" class="hover:text-white transition-colors">How It Works</a>
+          <button onclick="openAIModal()" class="flex items-center gap-2 text-brand-purple hover:text-white transition-colors">
+            <i data-lucide="sparkles" class="w-4 h-4 text-brand-purple"></i>
+            <span>AI Matchmaker</span>
+          </button>
+          <a href="#testimonials" class="hover:text-white transition-colors">Reviews</a>
+        </nav>
+
+        <!-- Right Action Items -->
+        <div class="flex items-center gap-3">
+          
+          <!-- Mode Switcher (Customer vs Admin) -->
+          <div class="hidden sm:flex items-center bg-brand-navy p-1 rounded-xl border border-brand-border text-xs">
+            <button id="roleCustomerBtn" onclick="switchRole('customer')" class="px-3 py-1.5 rounded-lg font-bold transition-all bg-brand-primary text-white shadow-sm">
+              Customer
+            </button>
+            <button id="roleAdminBtn" onclick="switchRole('admin')" class="px-3 py-1.5 rounded-lg font-bold text-gray-400 hover:text-white transition-all">
+              Fleet Admin
+            </button>
+          </div>
+
+          <!-- My Bookings Modal Trigger -->
+          <button onclick="openBookingsModal()" class="relative p-2.5 rounded-xl bg-brand-card hover:bg-brand-cardHover border border-brand-border text-gray-200 transition-colors" title="My Bookings">
+            <i data-lucide="calendar" class="w-5 h-5"></i>
+            <span id="bookingCountBadge" class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-brand-primary text-white text-[10px] font-bold flex items-center justify-center">0</span>
+          </button>
+
+          <!-- Favorites Trigger -->
+          <button onclick="openFavoritesModal()" class="p-2.5 rounded-xl bg-brand-card hover:bg-brand-cardHover border border-brand-border text-gray-200 transition-colors" title="Favorites">
+            <i data-lucide="heart" class="w-5 h-5 text-red-400"></i>
+          </button>
+
+          <!-- User Auth Profile -->
+          <button onclick="openAuthModal()" id="authButton" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-card hover:bg-brand-cardHover border border-brand-border text-xs font-bold text-white transition-colors">
+            <i data-lucide="user" class="w-4 h-4 text-brand-primary"></i>
+            <span id="authButtonText">Sign In</span>
+          </button>
+
+          <!-- Mobile Hamburger -->
+          <button onclick="toggleMobileMenu()" class="md:hidden p-2.5 rounded-xl bg-brand-card border border-brand-border text-gray-200">
+            <i data-lucide="menu" class="w-6 h-6"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobileMenu" class="hidden md:hidden bg-brand-navy border-b border-brand-border px-6 py-6 space-y-4">
+      <div class="flex items-center justify-between pb-4 border-b border-brand-border">
+        <span class="text-xs uppercase text-gray-400 font-bold">Active Role</span>
+        <div class="flex items-center bg-brand-card p-1 rounded-lg border border-brand-border text-xs">
+          <button onclick="switchRole('customer'); toggleMobileMenu();" class="px-3 py-1 rounded font-bold bg-brand-primary text-white">Client</button>
+          <button onclick="switchRole('admin'); toggleMobileMenu();" class="px-3 py-1 rounded font-bold text-gray-400">Admin</button>
+        </div>
+      </div>
+      <a href="#hero" onclick="toggleMobileMenu()" class="block text-gray-300 font-medium hover:text-white">Home</a>
+      <a href="#fleet" onclick="toggleMobileMenu()" class="block text-gray-300 font-medium hover:text-white">Explore Fleet</a>
+      <a href="#howItWorks" onclick="toggleMobileMenu()" class="block text-gray-300 font-medium hover:text-white">How It Works</a>
+      <button onclick="openAIModal(); toggleMobileMenu();" class="flex items-center gap-2 text-brand-purple font-medium">
+        <i data-lucide="sparkles" class="w-4 h-4"></i>
+        <span>AI Matchmaker</span>
+      </button>
+      <a href="#testimonials" onclick="toggleMobileMenu()" class="block text-gray-300 font-medium hover:text-white">Reviews</a>
+      <button onclick="openAuthModal(); toggleMobileMenu();" class="w-full py-2.5 rounded-xl bg-luxury-gradient text-white font-bold text-sm">
+        Account / Profile
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= HERO SECTION ================= -->
+  <section id="hero" class="relative pt-12 pb-24 md:pt-20 md:pb-32 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <!-- Hero Text -->
+        <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+          <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-brand-card border border-brand-border text-xs font-semibold text-brand-primary">
+            <span class="w-2 h-2 rounded-full bg-brand-primary animate-ping"></span>
+            <span>2026 Ultimate Prestige Collection Now Available</span>
+          </div>
+
+          <h1 class="font-display text-4xl sm:text-6xl lg:text-7xl font-black text-white leading-[1.1] tracking-tight">
+            Where Every Drive <br />
+            <span class="text-transparent bg-clip-text bg-luxury-gradient">Feels Premium</span>
+          </h1>
+
+          <p class="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+            Experience uncompromised luxury and race-bred engineering. On-demand exotic rentals delivered seamlessly with transparent pricing, zero deposit traps, and 24/7 concierge support.
+          </p>
+
+          <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
+            <a href="#fleet" class="px-8 py-4 rounded-xl bg-luxury-gradient text-white font-bold text-sm shadow-xl shadow-brand-primary/25 hover:shadow-brand-primary/40 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2">
+              <span>Explore Luxury Fleet</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+
+            <button onclick="openAIModal()" class="px-8 py-4 rounded-xl bg-brand-card hover:bg-brand-cardHover border border-brand-border text-white font-bold text-sm transition-all flex items-center gap-2 group">
+              <i data-lucide="sparkles" class="w-4 h-4 text-brand-purple group-hover:scale-110 transition-transform"></i>
+              <span>Launch AI Matchmaker</span>
+            </button>
+          </div>
+
+          <!-- Feature Bullets -->
+          <div class="grid grid-cols-3 gap-4 pt-6 border-t border-brand-border/60 max-w-lg mx-auto lg:mx-0">
+            <div>
+              <p class="text-2xl font-black text-white font-display">100%</p>
+              <p class="text-xs text-gray-400">Guaranteed Models</p>
+            </div>
+            <div>
+              <p class="text-2xl font-black text-white font-display">0%</p>
+              <p class="text-xs text-gray-400">Hidden Fees</p>
+            </div>
+            <div>
+              <p class="text-2xl font-black text-white font-display">24/7</p>
+              <p class="text-xs text-gray-400">VIP Concierge</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Featured Image & Hologram Card -->
+        <div class="lg:col-span-5 relative">
+          <div class="relative rounded-3xl overflow-hidden border border-brand-border shadow-2xl group">
+            <img 
+              src="https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=1200&q=80" 
+              alt="Porsche 911 GT3 RS" 
+              class="w-full h-[400px] object-cover group-hover:scale-105 transition-transform duration-700"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/30 to-transparent"></div>
+            
+            <div class="absolute bottom-6 left-6 right-6 p-5 rounded-2xl glass-panel border border-white/10">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-brand-primary/30 text-brand-primary">Featured Exotic</span>
+                  <h3 class="text-xl font-bold text-white mt-1">Porsche 911 GT3 RS</h3>
+                  <p class="text-xs text-gray-300">518 HP • 4.0L Naturally Aspirated Flat-6</p>
+                </div>
+                <div class="text-right">
+                  <span class="text-xl font-black text-white">$850</span>
+                  <span class="text-xs text-gray-400">/day</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ================= SMART QUICK SEARCH BAR ================= -->
+      <div class="mt-12 p-6 sm:p-8 rounded-3xl glass-panel border border-brand-border shadow-2xl relative z-20">
+        <form id="heroSearchForm" onsubmit="handleHeroSearch(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          
+          <!-- Location -->
+          <div class="space-y-1.5">
+            <label class="text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-brand-primary"></i>
+              <span>Pickup Location</span>
+            </label>
+            <select id="searchLocation" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3.5 py-3 text-sm text-white focus:outline-none focus:border-brand-primary">
+              <option value="SFO">San Francisco Airport (SFO)</option>
+              <option value="LAX">Los Angeles Airport (LAX)</option>
+              <option value="JFK">New York (JFK Executive)</option>
+              <option value="MIA">Miami South Beach Terminal</option>
+              <option value="LAS">Las Vegas Strip Lounge</option>
+            </select>
+          </div>
+
+          <!-- Pickup Date -->
+          <div class="space-y-1.5">
+            <label class="text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+              <i data-lucide="calendar" class="w-3.5 h-3.5 text-brand-primary"></i>
+              <span>Pickup Date</span>
+            </label>
+            <input type="date" id="searchPickupDate" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3.5 py-3 text-sm text-white focus:outline-none focus:border-brand-primary" required>
+          </div>
+
+          <!-- Return Date -->
+          <div class="space-y-1.5">
+            <label class="text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+              <i data-lucide="calendar-check" class="w-3.5 h-3.5 text-brand-primary"></i>
+              <span>Return Date</span>
+            </label>
+            <input type="date" id="searchReturnDate" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3.5 py-3 text-sm text-white focus:outline-none focus:border-brand-primary" required>
+          </div>
+
+          <!-- Category -->
+          <div class="space-y-1.5">
+            <label class="text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+              <i data-lucide="layers" class="w-3.5 h-3.5 text-brand-primary"></i>
+              <span>Category</span>
+            </label>
+            <select id="searchCategory" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3.5 py-3 text-sm text-white focus:outline-none focus:border-brand-primary">
+              <option value="All">All Categories</option>
+              <option value="Sports">Sports & Supercars</option>
+              <option value="Luxury">Ultra Luxury</option>
+              <option value="SUV">Luxury SUV</option>
+              <option value="Electric">Hyper Electric</option>
+              <option value="Sedan">Executive Sedan</option>
+              <option value="Economy">Premium Compact / Economy</option>
+            </select>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="flex items-end">
+            <button type="submit" class="w-full py-3.5 rounded-xl bg-luxury-gradient text-white font-bold text-sm shadow-lg shadow-brand-primary/25 hover:opacity-95 transition-all flex items-center justify-center gap-2">
+              <i data-lucide="search" class="w-4 h-4"></i>
+              <span>Search Availability</span>
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= EXPLORE CARS / FLEET SECTION ================= -->
+  <section id="fleet" class="py-20 border-t border-brand-border bg-brand-black/60">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Section Header -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+        <div>
+          <span class="text-xs uppercase font-bold tracking-widest text-brand-primary">The Vault</span>
+          <h2 class="font-display text-3xl sm:text-5xl font-extrabold text-white mt-1">Curated Supercar Fleet</h2>
+          <p class="text-gray-400 text-sm mt-2">Filter, inspect specifications, and verify live calendar availability.</p>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <!-- View Toggle -->
+          <div class="flex bg-brand-navy p-1 rounded-xl border border-brand-border text-xs">
+            <button id="viewGridBtn" onclick="toggleFleetView('grid')" class="p-2 rounded-lg bg-brand-card text-white">
+              <i data-lucide="layout-grid" class="w-4 h-4"></i>
+            </button>
+            <button id="viewListBtn" onclick="toggleFleetView('list')" class="p-2 rounded-lg text-gray-400 hover:text-white">
+              <i data-lucide="list" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <!-- Clear Filters -->
+          <button onclick="resetFleetFilters()" class="px-4 py-2 rounded-xl bg-brand-card hover:bg-brand-cardHover border border-brand-border text-xs font-semibold text-gray-300">
+            Clear Filters
+          </button>
+        </div>
+      </div>
+
+      <!-- Categories Tabs -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-4 mb-8 scrollbar-none" id="categoryTabs">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Search & Advanced Filter Controls Bar -->
+      <div class="p-5 rounded-2xl glass-panel mb-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-center">
+        <!-- Brand/Model Search -->
+        <div class="relative">
+          <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500"></i>
+          <input 
+            type="text" 
+            id="fleetKeyword" 
+            placeholder="Search make or model..." 
+            oninput="applyFleetFilters()"
+            class="w-full bg-brand-navy border border-brand-border rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-brand-primary"
+          />
+        </div>
+
+        <!-- Transmission -->
+        <div>
+          <select id="fleetTransmission" onchange="applyFleetFilters()" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-brand-primary">
+            <option value="All">All Transmissions</option>
+            <option value="Automatic">Automatic Transmission</option>
+            <option value="Manual">Manual Shift</option>
+          </select>
+        </div>
+
+        <!-- Price Range -->
+        <div>
+          <div class="flex justify-between text-xs text-gray-400 mb-1">
+            <span>Max Rate</span>
+            <span id="priceLabel" class="text-brand-primary font-bold">$1,500/day</span>
+          </div>
+          <input 
+            type="range" 
+            id="fleetPriceRange" 
+            min="200" 
+            max="1500" 
+            step="50" 
+            value="1500" 
+            oninput="updatePriceFilter(this.value)"
+            class="w-full accent-brand-primary cursor-pointer h-1.5 bg-brand-navy rounded-lg"
+          />
+        </div>
+
+        <!-- Sorting -->
+        <div>
+          <select id="fleetSort" onchange="applyFleetFilters()" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-brand-primary">
+            <option value="default">Sort by: Recommended</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="horsepower">Performance: Horsepower</option>
+            <option value="rating">Client Rating</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Cars Display Container -->
+      <div id="fleetContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Rendered via JS -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="fleetEmptyState" class="hidden text-center py-20">
+        <div class="w-16 h-16 rounded-2xl bg-brand-card border border-brand-border flex items-center justify-center mx-auto text-gray-500 mb-4">
+          <i data-lucide="car" class="w-8 h-8"></i>
+        </div>
+        <h3 class="text-xl font-bold text-white">No Matching Luxury Vehicles</h3>
+        <p class="text-sm text-gray-400 mt-1">Try expanding your price range or adjusting filters.</p>
+        <button onclick="resetFleetFilters()" class="mt-4 px-6 py-2.5 rounded-xl bg-brand-primary text-white text-xs font-bold">
+          Reset All Filters
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= HOW IT WORKS ================= -->
+  <section id="howItWorks" class="py-24 border-t border-brand-border relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <span class="text-xs uppercase font-bold tracking-widest text-brand-purple">Effortless Concierge</span>
+        <h2 class="font-display text-3xl sm:text-4xl font-extrabold text-white mt-2">How DriveLux Works</h2>
+        <p class="text-gray-400 text-sm mt-3">From digital reserve to key-in-hand within four straightforward steps.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <!-- Step 1 -->
+        <div class="p-6 rounded-2xl glass-panel relative group glow-border transition-all">
+          <div class="w-12 h-12 rounded-xl bg-brand-primary/20 text-brand-primary flex items-center justify-center mb-5 font-display text-lg font-bold">
+            01
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2">Select Your Vehicle</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">Choose from our verified exotic fleet with exact make, year, horsepower, and cabin specs.</p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="p-6 rounded-2xl glass-panel relative group glow-border transition-all">
+          <div class="w-12 h-12 rounded-xl bg-brand-purple/20 text-brand-purple flex items-center justify-center mb-5 font-display text-lg font-bold">
+            02
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2">Reserve Rental Dates</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">Select pickup and dropoff points across top airport executive hubs with live rate calculation.</p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="p-6 rounded-2xl glass-panel relative group glow-border transition-all">
+          <div class="w-12 h-12 rounded-xl bg-brand-cyan/20 text-brand-cyan flex items-center justify-center mb-5 font-display text-lg font-bold">
+            03
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2">Instant Verification</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">Complete simulated digital checkout with automatic collision waiver and instant confirmation.</p>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="p-6 rounded-2xl glass-panel relative group glow-border transition-all">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-5 font-display text-lg font-bold">
+            04
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2">Drive & Dominate</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">White-glove concierge delivers the vehicle washed, fueled, and tuned to your exact location.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TESTIMONIALS ================= -->
+  <section id="testimonials" class="py-20 border-t border-brand-border bg-brand-navy/40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+        <div>
+          <span class="text-xs uppercase font-bold tracking-widest text-brand-primary">Client Experiences</span>
+          <h2 class="font-display text-3xl font-extrabold text-white mt-1">Verified Member Reviews</h2>
+        </div>
+        <div class="flex items-center gap-2 mt-4 md:mt-0 text-sm font-semibold text-brand-primary">
+          <div class="flex text-amber-400">
+            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+          </div>
+          <span class="text-white ml-2">4.96 / 5.0 Global Trust Score</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="reviewsContainer">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="border-t border-brand-border bg-brand-black pt-16 pb-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-10 pb-12 border-b border-brand-border/60">
+        
+        <div class="md:col-span-2 space-y-4">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-luxury-gradient flex items-center justify-center">
+              <i data-lucide="shield-check" class="w-5 h-5 text-white"></i>
+            </div>
+            <span class="font-display text-xl font-black text-white">DRIVELUX</span>
+          </div>
+          <p class="text-xs text-gray-400 max-w-sm leading-relaxed">
+            The world's leading boutique exotic & performance vehicle network. Available in San Francisco, Los Angeles, Miami, New York, and Las Vegas.
+          </p>
+          <div class="flex items-center gap-3 text-gray-400">
+            <span class="text-xs text-gray-500">256-Bit Encrypted Secure Booking Engine</span>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-white mb-4">Fleet Hubs</h4>
+          <ul class="space-y-2 text-xs text-gray-400">
+            <li><a href="#fleet" class="hover:text-white">Porsche Motorsport</a></li>
+            <li><a href="#fleet" class="hover:text-white">Ferrari Scuderia</a></li>
+            <li><a href="#fleet" class="hover:text-white">Rolls-Royce Bespoke</a></li>
+            <li><a href="#fleet" class="hover:text-white">Tesla Performance</a></li>
+            <li><a href="#fleet" class="hover:text-white">Mercedes-AMG G-Wagon</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-white mb-4">Policies</h4>
+          <ul class="space-y-2 text-xs text-gray-400">
+            <li><a href="javascript:void(0)" onclick="showToast('Cancellation is free up to 24h prior to pickup.')" class="hover:text-white">Cancellation Policy</a></li>
+            <li><a href="javascript:void(0)" onclick="showToast('Drivers must be 21+ with clean driving record.')" class="hover:text-white">Driver Eligibility</a></li>
+            <li><a href="javascript:void(0)" onclick="showToast('Comprehensive collision waiver included in rate.')" class="hover:text-white">Insurance Coverage</a></li>
+            <li><a href="javascript:void(0)" onclick="showToast('Security deposits automatically released on return.')" class="hover:text-white">Deposit Returns</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-white mb-4">Contact VIP Desk</h4>
+          <div class="space-y-2 text-xs text-gray-400">
+            <p class="flex items-center gap-2"><i data-lucide="phone" class="w-3.5 h-3.5 text-brand-primary"></i> +1 (800) 555-LUXURY</p>
+            <p class="flex items-center gap-2"><i data-lucide="mail" class="w-3.5 h-3.5 text-brand-primary"></i> concierge@drivelux.com</p>
+            <p class="flex items-center gap-2"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-brand-primary"></i> 500 Howard St, San Francisco</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-4">
+        <p>&copy; 2026 DriveLux Inc. All rights reserved. Commercial Car Rental System.</p>
+        <div class="flex items-center gap-4">
+          <span class="hover:text-gray-400 cursor-pointer">Privacy Notice</span>
+          <span class="hover:text-gray-400 cursor-pointer">Terms of Service</span>
+          <span class="hover:text-gray-400 cursor-pointer">System Status: Operational</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= MODALS & OVERLAYS ================= -->
+
+  <!-- 1. CAR DETAILS & BOOKING FLOW MODAL -->
+  <div id="bookingModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md overflow-y-auto p-4 sm:p-6 flex items-center justify-center">
+    <div class="bg-brand-card border border-brand-border rounded-3xl w-full max-w-4xl overflow-hidden shadow-2xl relative my-8">
+      
+      <!-- Close button -->
+      <button onclick="closeBookingModal()" class="absolute top-5 right-5 z-20 p-2 rounded-full bg-brand-navy text-gray-400 hover:text-white transition-colors">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 max-h-[85vh] overflow-y-auto">
+        
+        <!-- Left: Car Details & Media -->
+        <div class="lg:col-span-5 bg-brand-navy p-6 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-brand-border">
+          <div>
+            <div id="modalCarBadge" class="inline-block text-[10px] uppercase font-bold px-2.5 py-0.5 rounded bg-brand-primary/20 text-brand-primary mb-3">
+              Supercar
+            </div>
+            <h3 id="modalCarTitle" class="text-2xl font-bold text-white">Car Brand Model</h3>
+            <p id="modalCarYear" class="text-xs text-gray-400">2026 Model</p>
+            
+            <div class="mt-4 rounded-2xl overflow-hidden border border-brand-border relative">
+              <img id="modalCarImage" src="" alt="Car" class="w-full h-48 object-cover">
+            </div>
+
+            <p id="modalCarDescription" class="text-xs text-gray-300 mt-4 leading-relaxed"></p>
+
+            <!-- Key Specs Grid -->
+            <div class="grid grid-cols-2 gap-2 mt-6">
+              <div class="p-2.5 rounded-xl bg-brand-card border border-brand-border">
+                <span class="text-[10px] text-gray-400 uppercase block font-semibold">Horsepower</span>
+                <span id="modalSpecPower" class="text-sm font-bold text-white">0 HP</span>
+              </div>
+              <div class="p-2.5 rounded-xl bg-brand-card border border-brand-border">
+                <span class="text-[10px] text-gray-400 uppercase block font-semibold">Transmission</span>
+                <span id="modalSpecTrans" class="text-sm font-bold text-white">Automatic</span>
+              </div>
+              <div class="p-2.5 rounded-xl bg-brand-card border border-brand-border">
+                <span class="text-[10px] text-gray-400 uppercase block font-semibold">Fuel / Powertrain</span>
+                <span id="modalSpecFuel" class="text-sm font-bold text-white">Petrol</span>
+              </div>
+              <div class="p-2.5 rounded-xl bg-brand-card border border-brand-border">
+                <span class="text-[10px] text-gray-400 uppercase block font-semibold">Top Speed</span>
+                <span id="modalSpecSpeed" class="text-sm font-bold text-white">200 mph</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 pt-6 border-t border-brand-border flex items-center justify-between">
+            <span class="text-xs text-gray-400">Daily Base Rate</span>
+            <div>
+              <span id="modalDailyRate" class="text-2xl font-black text-white">$0</span>
+              <span class="text-xs text-gray-400">/day</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Multi-Step Interactive Checkout -->
+        <div class="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between">
+          
+          <!-- Steps Header indicator -->
+          <div>
+            <div class="flex items-center justify-between mb-6">
+              <div class="flex items-center gap-2">
+                <span id="stepNumberPill" class="w-6 h-6 rounded-full bg-brand-primary text-white text-xs font-bold flex items-center justify-center">1</span>
+                <span id="stepTitle" class="text-sm font-bold text-white">Rental Dates & Locations</span>
+              </div>
+              <span id="stepCounter" class="text-xs text-gray-400 font-semibold">Step 1 of 3</span>
+            </div>
+
+            <!-- STEP 1: Dates & Location -->
+            <div id="bookingStep1" class="space-y-4">
+              <div>
+                <label class="block text-xs uppercase font-semibold text-gray-400 mb-1">Pickup Executive Hub</label>
+                <select id="bookPickupLoc" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3.5 py-2.5 text-xs text-white">
+                  <option value="San Francisco Airport (SFO)">San Francisco Airport (SFO)</option>
+                  <option value="Los Angeles Int (LAX)">Los Angeles Int (LAX)</option>
+                  <option value="New York JFK Executive">New York JFK Executive</option>
+                  <option value="Miami South Beach Terminal">Miami South Beach Terminal</option>
+                  <option value="Las Vegas Strip Lounge">Las Vegas Strip Lounge</option>
+                </select>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs uppercase font-semibold text-gray-400 mb-1">Pickup Date</label>
+                  <input type="date" id="bookStartDate" onchange="calculateBookingPrice()" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3 py-2 text-xs text-white" required>
+                </div>
+                <div>
+                  <label class="block text-xs uppercase font-semibold text-gray-400 mb-1">Return Date</label>
+                  <input type="date" id="bookEndDate" onchange="calculateBookingPrice()" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3 py-2 text-xs text-white" required>
+                </div>
+              </div>
+
+              <!-- Price Breakdown Receipt Box -->
+              <div class="p-4 rounded-2xl bg-brand-navy border border-brand-border space-y-2 text-xs">
+                <div class="flex justify-between text-gray-400">
+                  <span>Rental Duration</span>
+                  <span id="calcDuration" class="text-white font-semibold">1 Day</span>
+                </div>
+                <div class="flex justify-between text-gray-400">
+                  <span>Base Rate Subtotal</span>
+                  <span id="calcSubtotal" class="text-white font-semibold">$0</span>
+                </div>
+                <div class="flex justify-between text-gray-400">
+                  <span>Automotive Luxury Tax (12%)</span>
+                  <span id="calcTax" class="text-white font-semibold">$0</span>
+                </div>
+                <div class="flex justify-between text-gray-400">
+                  <span>Comprehensive CDW Insurance ($40/day)</span>
+                  <span id="calcInsurance" class="text-white font-semibold">$40</span>
+                </div>
+                <div class="pt-2 border-t border-brand-border flex justify-between font-bold text-sm">
+                  <span class="text-white">Estimated Grand Total</span>
+                  <span id="calcTotal" class="text-brand-primary text-base font-black">$0</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 2: Driver Verification Details -->
+            <div id="bookingStep2" class="hidden space-y-4">
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs uppercase font-semibold text-gray-400 mb-1">Full Legal Name</label>
+                  <input type="text" id="driverName" placeholder="Alexander Vance" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3.5 py-2.5 text-xs text-white">
+                </div>
+                <div>
+                  <label class="block text-xs uppercase font-semibold text-gray-400 mb-1">Email Address</label>
+                  <input type="email" id="driverEmail" placeholder="alex@drivelux.com" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3.5 py-2.5 text-xs text-white">
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs uppercase font-semibold text-gray-400 mb-1">Phone Number</label>
+                  <input type="tel" id="driverPhone" placeholder="+1 (415) 555-0199" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3.5 py-2.5 text-xs text-white">
+                </div>
+                <div>
+                  <label class="block text-xs uppercase font-semibold text-gray-400 mb-1">Driver License ID</label>
+                  <input type="text" id="driverLicense" placeholder="DL-9481940" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3.5 py-2.5 text-xs text-white">
+                </div>
+              </div>
+
+              <div class="p-3.5 rounded-xl bg-brand-primary/10 border border-brand-primary/30 text-xs text-brand-primary flex items-start gap-2">
+                <i data-lucide="shield-check" class="w-4 h-4 flex-shrink-0 mt-0.5"></i>
+                <span>Minimum age 21+. Zero deposit holds on corporate credit cards. Concierge handover includes identity badge verification.</span>
+              </div>
+            </div>
+
+            <!-- STEP 3: Payment Verification Gateway Simulation -->
+            <div id="bookingStep3" class="hidden space-y-4">
+              <div class="p-4 rounded-xl bg-brand-navy border border-brand-border">
+                <div class="flex items-center justify-between mb-3">
+                  <span class="text-xs font-bold text-white uppercase">Secure Payment Mode</span>
+                  <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold">Sandbox Verified</span>
+                </div>
+                <div class="space-y-3">
+                  <div>
+                    <label class="block text-[11px] text-gray-400 mb-1">Credit / Fleet Card Number</label>
+                    <input type="text" value="4532 •••• •••• 8892" readonly class="w-full bg-brand-card border border-brand-border rounded-lg px-3 py-2 text-xs text-gray-300 font-mono">
+                  </div>
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <label class="block text-[11px] text-gray-400 mb-1">Expiration</label>
+                      <input type="text" value="12/28" readonly class="w-full bg-brand-card border border-brand-border rounded-lg px-3 py-2 text-xs text-gray-300 font-mono">
+                    </div>
+                    <div>
+                      <label class="block text-[11px] text-gray-400 mb-1">CVV</label>
+                      <input type="text" value="•••" readonly class="w-full bg-brand-card border border-brand-border rounded-lg px-3 py-2 text-xs text-gray-300 font-mono">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-xs text-gray-400 flex items-center gap-2">
+                <i data-lucide="lock" class="w-4 h-4 text-emerald-400"></i>
+                <span>Signature verification & 256-bit TLS handshake will confirm this booking.</span>
+              </div>
+            </div>
+
+            <!-- SUCCESS CONFIRMATION STATE -->
+            <div id="bookingSuccessState" class="hidden text-center py-6 space-y-4">
+              <div class="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto border border-emerald-500/30">
+                <i data-lucide="check" class="w-8 h-8"></i>
+              </div>
+              <h4 class="text-2xl font-bold text-white">Reservation Confirmed!</h4>
+              <p class="text-xs text-gray-300">Your luxury vehicle has been locked in the DriveLux master registry.</p>
+              
+              <div class="p-4 rounded-xl bg-brand-navy border border-brand-border inline-block text-left text-xs space-y-1">
+                <p class="text-gray-400">Booking Reference: <span id="confirmedRefCode" class="text-brand-primary font-mono font-bold"></span></p>
+                <p class="text-gray-400">Payment Status: <span class="text-emerald-400 font-semibold">Captured & Verified</span></p>
+              </div>
+
+              <div class="pt-4 flex items-center justify-center gap-3">
+                <button onclick="printCurrentInvoice()" class="px-5 py-2.5 rounded-xl bg-brand-navy border border-brand-border text-white text-xs font-bold hover:bg-brand-card flex items-center gap-2">
+                  <i data-lucide="printer" class="w-4 h-4"></i>
+                  <span>Print Receipt</span>
+                </button>
+                <button onclick="closeBookingModal(); openBookingsModal();" class="px-5 py-2.5 rounded-xl bg-luxury-gradient text-white text-xs font-bold">
+                  View in My Bookings
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Bottom Action Buttons -->
+          <div id="modalActionFooter" class="pt-6 border-t border-brand-border flex items-center justify-between mt-6">
+            <button id="modalPrevBtn" onclick="prevBookingStep()" class="hidden px-4 py-2.5 rounded-xl bg-brand-navy border border-brand-border text-xs font-semibold text-gray-300 hover:text-white">
+              Back
+            </button>
+            <div class="ml-auto">
+              <button id="modalNextBtn" onclick="nextBookingStep()" class="px-6 py-2.5 rounded-xl bg-luxury-gradient text-white text-xs font-bold hover:opacity-95 flex items-center gap-1.5 shadow-lg shadow-brand-primary/20">
+                <span>Continue to Driver Details</span>
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. AI RECOMMENDATION ASSISTANT MODAL -->
+  <div id="aiModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md overflow-y-auto p-4 flex items-center justify-center">
+    <div class="bg-brand-card border border-brand-border rounded-3xl w-full max-w-2xl p-6 sm:p-8 shadow-2xl relative">
+      <button onclick="closeAIModal()" class="absolute top-5 right-5 p-2 rounded-full bg-brand-navy text-gray-400 hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-3 mb-6">
+        <div class="p-3 rounded-2xl bg-luxury-gradient text-white">
+          <i data-lucide="sparkles" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-white font-display">DriveLux AI Matchmaker</h3>
+          <p class="text-xs text-gray-400">Heuristic precision matching against luxury performance characteristics</p>
+        </div>
+      </div>
+
+      <!-- Questionnaire Form -->
+      <div id="aiFormContainer" class="space-y-4">
+        <div>
+          <label class="block text-xs uppercase font-semibold text-gray-400 mb-1">
+            Max Daily Budget: <span id="aiBudgetDisplay" class="text-brand-primary font-bold">$750/day</span>
+          </label>
+          <input type="range" id="aiBudget" min="250" max="1500" step="50" value="750" oninput="document.getElementById('aiBudgetDisplay').innerText = '$' + this.value + '/day'" class="w-full accent-brand-primary">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs uppercase font-semibold text-gray-400 mb-1">Driving Mission</label>
+            <select id="aiIntent" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3 py-2 text-xs text-white">
+              <option value="city">Urban Executive Transit</option>
+              <option value="track">Weekend Canyon & Track Thrills</option>
+              <option value="family">Family Luxury Road Trip</option>
+              <option value="status">Red Carpet & VIP Entrance</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs uppercase font-semibold text-gray-400 mb-1">Seating Need</label>
+            <select id="aiSeats" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3 py-2 text-xs text-white">
+              <option value="2">Coupe / 2 Passengers</option>
+              <option value="4">4 Executive Passengers</option>
+              <option value="5">5+ Full Cabin / SUV</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs uppercase font-semibold text-gray-400 mb-1">Transmission Preference</label>
+            <select id="aiTransmission" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3 py-2 text-xs text-white">
+              <option value="Any">Any Transmission</option>
+              <option value="Automatic">Automatic (Paddle Shift)</option>
+              <option value="Manual">Manual Shift (Pure Analog)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs uppercase font-semibold text-gray-400 mb-1">Preferred Powertrain</label>
+            <select id="aiPowertrain" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3 py-2 text-xs text-white">
+              <option value="Any">Any Powertrain</option>
+              <option value="Petrol">Twin-Turbo V8 / High-Rev Petrol</option>
+              <option value="Electric">Instant Torque Hyper Electric</option>
+            </select>
+          </div>
+        </div>
+
+        <button onclick="runAIMatchmaking()" class="w-full mt-4 py-3.5 rounded-xl bg-luxury-gradient text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-brand-primary/25">
+          <i data-lucide="cpu" class="w-4 h-4"></i>
+          <span>Compute High-Compatibility Matches</span>
+        </button>
+      </div>
+
+      <!-- AI Matches Results Container -->
+      <div id="aiResultsContainer" class="hidden space-y-3 mt-6">
+        <div class="flex items-center justify-between border-b border-brand-border pb-2">
+          <span class="text-xs font-bold text-gray-400 uppercase">Top Heuristic Matches</span>
+          <button onclick="resetAIModal()" class="text-xs text-brand-primary hover:underline font-semibold">Modify Criteria</button>
+        </div>
+        <div id="aiMatchesList" class="space-y-3">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 3. MY BOOKINGS / CUSTOMER DASHBOARD MODAL -->
+  <div id="bookingsModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md overflow-y-auto p-4 flex items-center justify-center">
+    <div class="bg-brand-card border border-brand-border rounded-3xl w-full max-w-3xl p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      <button onclick="closeBookingsModal()" class="absolute top-5 right-5 p-2 rounded-full bg-brand-navy text-gray-400 hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-3 mb-6">
+        <div class="p-3 rounded-2xl bg-brand-primary/20 text-brand-primary">
+          <i data-lucide="calendar" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-white font-display">Client Reservations Ledger</h3>
+          <p class="text-xs text-gray-400">Track current status, active rentals, cancel policy, and download receipts</p>
+        </div>
+      </div>
+
+      <!-- Bookings List -->
+      <div id="bookingsList" class="space-y-4">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. FAVORITES / WISHLIST MODAL -->
+  <div id="favoritesModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md overflow-y-auto p-4 flex items-center justify-center">
+    <div class="bg-brand-card border border-brand-border rounded-3xl w-full max-w-2xl p-6 sm:p-8 shadow-2xl relative max-h-[85vh] overflow-y-auto">
+      <button onclick="closeFavoritesModal()" class="absolute top-5 right-5 p-2 rounded-full bg-brand-navy text-gray-400 hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-3 mb-6">
+        <div class="p-3 rounded-2xl bg-red-500/20 text-red-400">
+          <i data-lucide="heart" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-white font-display">Saved Dream Fleet</h3>
+          <p class="text-xs text-gray-400">Exotic vehicles flagged for your upcoming trips</p>
+        </div>
+      </div>
+
+      <div id="favoritesList" class="space-y-3">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. FLEET ADMIN DASHBOARD MODAL -->
+  <div id="adminModal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-lg overflow-y-auto p-4 sm:p-8 flex items-center justify-center">
+    <div class="bg-brand-card border border-brand-border rounded-3xl w-full max-w-6xl p-6 sm:p-8 shadow-2xl relative max-h-[92vh] overflow-y-auto">
+      
+      <!-- Close button -->
+      <button onclick="closeAdminModal()" class="absolute top-6 right-6 p-2 rounded-full bg-brand-navy text-gray-400 hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <!-- Admin Top Banner -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-brand-border gap-4">
+        <div>
+          <span class="text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded bg-brand-purple/20 text-brand-purple">
+            Executive Fleet Command
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1 font-display">Operations & Analytics</h2>
+          <p class="text-xs text-gray-400">Real-time revenue metrics, fleet availability toggles, and reservation state control.</p>
+        </div>
+        
+        <div class="flex items-center gap-3">
+          <button onclick="exportCSVReport()" class="px-4 py-2 rounded-xl bg-brand-navy hover:bg-brand-border border border-brand-border text-xs font-bold text-gray-300 flex items-center gap-2">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            <span>Export Bookings CSV</span>
+          </button>
+          <button onclick="openAddCarModal()" class="px-4 py-2 rounded-xl bg-luxury-gradient text-white text-xs font-bold flex items-center gap-2 shadow-lg shadow-brand-primary/20">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>Add Vehicle</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Metrics -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-8">
+        <div class="p-5 rounded-2xl bg-brand-navy border border-brand-border">
+          <span class="text-[11px] text-gray-400 uppercase font-semibold">Total Revenue Captured</span>
+          <p id="kpiRevenue" class="text-2xl font-black text-white mt-2 font-display">$0</p>
+          <span class="text-[10px] text-emerald-400 font-semibold block mt-1">+12% vs last cycle</span>
+        </div>
+        <div class="p-5 rounded-2xl bg-brand-navy border border-brand-border">
+          <span class="text-[11px] text-gray-400 uppercase font-semibold">Active Fleet Size</span>
+          <p id="kpiFleetCount" class="text-2xl font-black text-white mt-2 font-display">0</p>
+          <span id="kpiAvailableCount" class="text-[10px] text-brand-primary font-semibold block mt-1">0 Available</span>
+        </div>
+        <div class="p-5 rounded-2xl bg-brand-navy border border-brand-border">
+          <span class="text-[11px] text-gray-400 uppercase font-semibold">Total Bookings</span>
+          <p id="kpiBookingsCount" class="text-2xl font-black text-white mt-2 font-display">0</p>
+          <span class="text-[10px] text-brand-purple font-semibold block mt-1">Confirmed & Active</span>
+        </div>
+        <div class="p-5 rounded-2xl bg-brand-navy border border-brand-border">
+          <span class="text-[11px] text-gray-400 uppercase font-semibold">Active Clients</span>
+          <p class="text-2xl font-black text-white mt-2 font-display">1,420</p>
+          <span class="text-[10px] text-emerald-400 font-semibold block mt-1">Verified VIP members</span>
+        </div>
+      </div>
+
+      <!-- Admin Tabs -->
+      <div class="flex gap-4 border-b border-brand-border pb-3 mb-6 text-xs font-bold">
+        <button id="adminTabCarsBtn" onclick="switchAdminTab('cars')" class="text-brand-primary border-b-2 border-brand-primary pb-2">Fleet Inventory</button>
+        <button id="adminTabBookingsBtn" onclick="switchAdminTab('bookings')" class="text-gray-400 hover:text-white pb-2">Reservations Ledger</button>
+      </div>
+
+      <!-- Tab Content: Cars Management -->
+      <div id="adminTabCars" class="overflow-x-auto">
+        <table class="w-full text-left text-xs text-gray-300">
+          <thead class="bg-brand-navy uppercase text-[10px] text-gray-400 border-b border-brand-border">
+            <tr>
+              <th class="py-3 px-4">Vehicle</th>
+              <th class="py-3 px-4">Category</th>
+              <th class="py-3 px-4">Daily Rate</th>
+              <th class="py-3 px-4">Specs</th>
+              <th class="py-3 px-4">Status</th>
+              <th class="py-3 px-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="adminCarsTableBody" class="divide-y divide-brand-border">
+            <!-- Rendered via JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Tab Content: Bookings Management -->
+      <div id="adminTabBookings" class="hidden overflow-x-auto">
+        <table class="w-full text-left text-xs text-gray-300">
+          <thead class="bg-brand-navy uppercase text-[10px] text-gray-400 border-b border-brand-border">
+            <tr>
+              <th class="py-3 px-4">Reference</th>
+              <th class="py-3 px-4">Customer</th>
+              <th class="py-3 px-4">Car Model</th>
+              <th class="py-3 px-4">Rental Window</th>
+              <th class="py-3 px-4">Total</th>
+              <th class="py-3 px-4">State</th>
+              <th class="py-3 px-4 text-right">Override</th>
+            </tr>
+          </thead>
+          <tbody id="adminBookingsTableBody" class="divide-y divide-brand-border">
+            <!-- Rendered via JS -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 6. ADD VEHICLE MODAL (ADMIN) -->
+  <div id="addCarModal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md p-4 flex items-center justify-center">
+    <div class="bg-brand-card border border-brand-border rounded-3xl w-full max-w-lg p-6 sm:p-8 shadow-2xl relative">
+      <button onclick="closeAddCarModal()" class="absolute top-5 right-5 p-2 rounded-full bg-brand-navy text-gray-400 hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <h3 class="text-xl font-bold text-white mb-4">Add Fleet Vehicle</h3>
+
+      <form onsubmit="handleAddNewCar(event)" class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-gray-400 mb-1">Make / Brand</label>
+            <input type="text" id="newCarBrand" required placeholder="McLaren" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3 py-2 text-white">
+          </div>
+          <div>
+            <label class="block text-gray-400 mb-1">Model Name</label>
+            <input type="text" id="newCarModel" required placeholder="720S Spider" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3 py-2 text-white">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-gray-400 mb-1">Category</label>
+            <select id="newCarCategory" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3 py-2 text-white">
+              <option value="Sports">Sports</option>
+              <option value="Luxury">Luxury</option>
+              <option value="SUV">SUV</option>
+              <option value="Electric">Electric</option>
+              <option value="Sedan">Sedan</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-gray-400 mb-1">Daily Rate ($)</label>
+            <input type="number" id="newCarDailyRate" required placeholder="950" min="100" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3 py-2 text-white">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block text-gray-400 mb-1">Horsepower</label>
+            <input type="number" id="newCarHP" required placeholder="710" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3 py-2 text-white">
+          </div>
+          <div>
+            <label class="block text-gray-400 mb-1">Seats</label>
+            <input type="number" id="newCarSeats" value="2" min="1" max="8" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3 py-2 text-white">
+          </div>
+          <div>
+            <label class="block text-gray-400 mb-1">Transmission</label>
+            <select id="newCarTrans" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3 py-2 text-white">
+              <option value="Automatic">Automatic</option>
+              <option value="Manual">Manual</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-gray-400 mb-1">Image URL</label>
+          <input type="url" id="newCarImage" required placeholder="https://images.unsplash.com/..." class="w-full bg-brand-navy border border-brand-border rounded-xl px-3 py-2 text-white">
+        </div>
+
+        <div>
+          <label class="block text-gray-400 mb-1">Description</label>
+          <textarea id="newCarDesc" rows="2" placeholder="Unbridled supercar performance..." class="w-full bg-brand-navy border border-brand-border rounded-xl px-3 py-2 text-white"></textarea>
+        </div>
+
+        <button type="submit" class="w-full py-3 rounded-xl bg-luxury-gradient text-white font-bold mt-2">
+          Add to Fleet Master Catalog
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 7. AUTH / PROFILE MODAL (ANIMATED GLASS CARD) -->
+  <div id="authModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md p-4 flex items-center justify-center">
+    <div class="bg-brand-card border border-brand-border rounded-3xl w-full max-w-md p-6 sm:p-8 shadow-2xl relative">
+      <button onclick="closeAuthModal()" class="absolute top-5 right-5 p-2 rounded-full bg-brand-navy text-gray-400 hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="text-center mb-6">
+        <div class="w-12 h-12 rounded-2xl bg-luxury-gradient flex items-center justify-center mx-auto text-white shadow-lg shadow-brand-primary/30 mb-3">
+          <i data-lucide="shield-check" class="w-6 h-6"></i>
+        </div>
+        <h3 id="authModalTitle" class="text-2xl font-bold text-white font-display">Client Authentication</h3>
+        <p class="text-xs text-gray-400 mt-1">Access your concierge perks and reservation logs</p>
+      </div>
+
+      <form onsubmit="handleAuthSubmit(event)" class="space-y-4 text-xs">
+        <div id="authNameField" class="hidden">
+          <label class="block text-gray-400 mb-1">Legal Full Name</label>
+          <input type="text" id="authNameInput" placeholder="Alexander Vance" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3.5 py-2.5 text-white">
+        </div>
+
+        <div>
+          <label class="block text-gray-400 mb-1">Email Address</label>
+          <input type="email" id="authEmailInput" required value="alex@drivelux.com" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3.5 py-2.5 text-white">
+        </div>
+
+        <div>
+          <label class="block text-gray-400 mb-1">Access Password</label>
+          <input type="password" id="authPassInput" required value="LuxuryPass2026!" class="w-full bg-brand-navy border border-brand-border rounded-xl px-3.5 py-2.5 text-white">
+        </div>
+
+        <button type="submit" id="authSubmitBtn" class="w-full py-3 rounded-xl bg-luxury-gradient text-white font-bold shadow-lg shadow-brand-primary/25">
+          Sign In
+        </button>
+      </form>
+
+      <div class="mt-6 text-center text-xs text-gray-400">
+        <span id="authToggleText">Don't have a verified profile?</span>
+        <button type="button" onclick="toggleAuthMode()" id="authToggleBtn" class="text-brand-primary font-bold hover:underline ml-1">
+          Sign Up
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRINTABLE RECEIPT TEMPLATE (HIDDEN UNTIL PRINT) -->
+  <div id="printableReceipt" class="hidden p-8 text-black bg-white max-w-2xl mx-auto font-sans">
+    <div style="border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 20px;">
+      <h1 style="font-size: 24px; font-weight: bold; margin: 0;">DRIVELUX CONCIERGE RENTALS</h1>
+      <p style="font-size: 12px; margin: 4px 0 0 0;">Official Rental Ledger & Tax Invoice Receipt</p>
+    </div>
+    <div id="printableReceiptContent"></div>
+    <div style="margin-top: 30px; border-top: 1px solid #ccc; padding-top: 10px; font-size: 10px; color: #666;">
+      Thank you for choosing DriveLux. For 24/7 Roadside Assistance call +1 (800) 555-LUXURY.
+    </div>
+  </div>
+
+  <!-- ================= JAVASCRIPT STATE & ENGINE ================= -->
+  <script>
+    /* ----------------------------------------------------
+       INITIAL PRODUCTION SEED DATA (SAVED IN LOCALSTORAGE)
+       ---------------------------------------------------- */
+    const DEFAULT_CARS = [
+      {
+        id: 'car-1',
+        brand: 'Porsche',
+        model: '911 GT3 RS',
+        year: 2024,
+        category: 'Sports',
+        dailyRate: 850,
+        images: ['https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=1200&q=80'],
+        specs: { transmission: 'Automatic', fuelType: 'Petrol', seats: 2, horsepower: 518, topSpeed: '184 mph', luggage: 1 },
+        description: 'Track-honed naturally aspirated Flat-6 with active aerodynamics, DRS wing, and unparalleled mechanical grip.',
+        rating: 4.98,
+        reviewsCount: 38,
+        isAvailable: true
+      },
+      {
+        id: 'car-2',
+        brand: 'Mercedes-Benz',
+        model: 'G 63 AMG',
+        year: 2024,
+        category: 'SUV',
+        dailyRate: 720,
+        images: ['https://images.unsplash.com/photo-1520031441872-265e4ff70366?auto=format&fit=crop&w=1200&q=80'],
+        specs: { transmission: 'Automatic', fuelType: 'Petrol', seats: 5, horsepower: 577, topSpeed: '149 mph', luggage: 4 },
+        description: 'Handcrafted AMG 4.0L V8 Biturbo powerhouse wrapped in iconic luxury and unstoppable road presence.',
+        rating: 4.95,
+        reviewsCount: 52,
+        isAvailable: true
+      },
+      {
+        id: 'car-3',
+        brand: 'Rolls-Royce',
+        model: 'Ghost Black Badge',
+        year: 2023,
+        category: 'Luxury',
+        dailyRate: 1450,
+        images: ['https://images.unsplash.com/photo-1631295868223-63265b40d9e4?auto=format&fit=crop&w=1200&q=80'],
+        specs: { transmission: 'Automatic', fuelType: 'Petrol', seats: 4, horsepower: 592, topSpeed: '155 mph', luggage: 3 },
+        description: 'The pinnacle of post-opulent engineering. Effortless twin-turbo V12 acceleration with sound-dampened serenity.',
+        rating: 5.0,
+        reviewsCount: 21,
+        isAvailable: true
+      },
+      {
+        id: 'car-4',
+        brand: 'Tesla',
+        model: 'Model S Plaid',
+        year: 2024,
+        category: 'Electric',
+        dailyRate: 420,
+        images: ['https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=1200&q=80'],
+        specs: { transmission: 'Automatic', fuelType: 'Electric', seats: 5, horsepower: 1020, topSpeed: '200 mph', luggage: 3 },
+        description: '0 to 60 mph in 1.99 seconds. Tri-motor electric AWD featuring cutting-edge autonomous driver assistance.',
+        rating: 4.92,
+        reviewsCount: 65,
+        isAvailable: true
+      },
+      {
+        id: 'car-5',
+        brand: 'BMW',
+        model: 'M5 Competition',
+        year: 2024,
+        category: 'Sedan',
+        dailyRate: 490,
+        images: ['https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1200&q=80'],
+        specs: { transmission: 'Automatic', fuelType: 'Petrol', seats: 5, horsepower: 617, topSpeed: '190 mph', luggage: 3 },
+        description: 'Executive poise engineered with racecourse dynamics. Switchable M xDrive AWD to rear-wheel-drive pure drift mode.',
+        rating: 4.89,
+        reviewsCount: 44,
+        isAvailable: true
+      },
+      {
+        id: 'car-6',
+        brand: 'Ferrari',
+        model: 'F8 Tributo',
+        year: 2023,
+        category: 'Sports',
+        dailyRate: 1250,
+        images: ['https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&w=1200&q=80'],
+        specs: { transmission: 'Automatic', fuelType: 'Petrol', seats: 2, horsepower: 710, topSpeed: '211 mph', luggage: 1 },
+        description: 'Maranello mid-rear engine twin-turbo V8 masterpiece delivering instantaneous throttle response and symphonic exhaust note.',
+        rating: 4.99,
+        reviewsCount: 29,
+        isAvailable: true
+      },
+      {
+        id: 'car-7',
+        brand: 'Audi',
+        model: 'RS e-tron GT',
+        year: 2024,
+        category: 'Electric',
+        dailyRate: 510,
+        images: ['https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=1200&q=80'],
+        specs: { transmission: 'Automatic', fuelType: 'Electric', seats: 4, horsepower: 637, topSpeed: '155 mph', luggage: 2 },
+        description: 'Sculpted electric gran turismo with 800-volt high-velocity charging and iconic Quattro all-wheel precision.',
+        rating: 4.91,
+        reviewsCount: 33,
+        isAvailable: true
+      },
+      {
+        id: 'car-8',
+        brand: 'Range Rover',
+        model: 'SV Bespoke LWB',
+        year: 2024,
+        category: 'SUV',
+        dailyRate: 640,
+        images: ['https://images.unsplash.com/photo-1606016159991-dfe4f2746ad5?auto=format&fit=crop&w=1200&q=80'],
+        specs: { transmission: 'Automatic', fuelType: 'Petrol', seats: 5, horsepower: 523, topSpeed: '155 mph', luggage: 4 },
+        description: 'First-class rear executive lounge seating, active noise cancellation, and all-wheel steering agility.',
+        rating: 4.94,
+        reviewsCount: 47,
+        isAvailable: true
+      },
+      {
+        id: 'car-9',
+        brand: 'McLaren',
+        model: '720S Spider',
+        year: 2024,
+        category: 'Sports',
+        dailyRate: 1150,
+        images: ['https://images.unsplash.com/photo-1621135802920-133df287f89c?auto=format&fit=crop&w=1200&q=80'],
+        specs: { transmission: 'Automatic', fuelType: 'Petrol', seats: 2, horsepower: 710, topSpeed: '212 mph', luggage: 1 },
+        description: 'Monocage II-S carbon fiber chassis with retractable hardtop. Blistering 4.0L twin-turbocharged supercar drama.',
+        rating: 4.97,
+        reviewsCount: 31,
+        isAvailable: true
+      },
+      {
+        id: 'car-10',
+        brand: 'Chevrolet',
+        model: 'Corvette Z06',
+        year: 2024,
+        category: 'Sports',
+        dailyRate: 590,
+        images: ['https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1200&q=80'],
+        specs: { transmission: 'Automatic', fuelType: 'Petrol', seats: 2, horsepower: 670, topSpeed: '189 mph', luggage: 2 },
+        description: 'Flat-plane crank 5.5L LT6 V8 that screams to an 8,600 RPM redline with widebody downforce aerodynamics.',
+        rating: 4.93,
+        reviewsCount: 26,
+        isAvailable: true
+      },
+      {
+        id: 'car-11',
+        brand: 'Bentley',
+        model: 'Continental GT Speed',
+        year: 2024,
+        category: 'Luxury',
+        dailyRate: 980,
+        images: ['https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1200&q=80'],
+        specs: { transmission: 'Automatic', fuelType: 'Petrol', seats: 4, horsepower: 650, topSpeed: '208 mph', luggage: 3 },
+        description: 'Handcrafted grand tourer with twin-turbocharged 6.0L W12, all-wheel steering, and diamond-in-diamond quilted leather.',
+        rating: 4.96,
+        reviewsCount: 35,
+        isAvailable: true
+      },
+      {
+        id: 'car-12',
+        brand: 'Mercedes-Maybach',
+        model: 'S 680 4MATIC',
+        year: 2024,
+        category: 'Luxury',
+        dailyRate: 1100,
+        images: ['https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1200&q=80'],
+        specs: { transmission: 'Automatic', fuelType: 'Petrol', seats: 4, horsepower: 621, topSpeed: '155 mph', luggage: 3 },
+        description: 'Hand-assembled 6.0L V12 biturbo executive carriage with refrigerated console, executive calf-rests, and Burmester 4D audio.',
+        rating: 5.0,
+        reviewsCount: 19,
+        isAvailable: true
+      },
+      {
+        id: 'car-13',
+        brand: 'Cadillac',
+        model: 'Escalade-V',
+        year: 2024,
+        category: 'SUV',
+        dailyRate: 680,
+        images: ['https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=1200&q=80'],
+        specs: { transmission: 'Automatic', fuelType: 'Petrol', seats: 7, horsepower: 682, topSpeed: '125 mph', luggage: 5 },
+        description: 'Supercharged 6.2L V8 delivering sports car acceleration inside an ultra-luxurious, three-row flagship cabin.',
+        rating: 4.91,
+        reviewsCount: 41,
+        isAvailable: true
+      },
+      {
+        id: 'car-14',
+        brand: 'Porsche',
+        model: 'Cayenne Turbo GT',
+        year: 2024,
+        category: 'SUV',
+        dailyRate: 750,
+        images: ['https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80'],
+        specs: { transmission: 'Automatic', fuelType: 'Petrol', seats: 4, horsepower: 650, topSpeed: '189 mph', luggage: 4 },
+        description: 'Nürburgring record-holder. Titanium sports exhaust, carbon ceramic brakes, and sports car handling in an SUV stance.',
+        rating: 4.97,
+        reviewsCount: 30,
+        isAvailable: true
+      },
+      {
+        id: 'car-15',
+        brand: 'Lucid',
+        model: 'Air Sapphire',
+        year: 2024,
+        category: 'Electric',
+        dailyRate: 690,
+        images: ['https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1200&q=80'],
+        specs: { transmission: 'Automatic', fuelType: 'Electric', seats: 5, horsepower: 1234, topSpeed: '205 mph', luggage: 3 },
+        description: 'Three-motor electric hyper-sedan producing 1,234 horsepower. 0-60 in 1.89 seconds with over 400 miles of range.',
+        rating: 4.98,
+        reviewsCount: 22,
+        isAvailable: true
+      },
+      {
+        id: 'car-16',
+        brand: 'Porsche',
+        model: 'Taycan Turbo S',
+        year: 2024,
+        category: 'Electric',
+        dailyRate: 580,
+        images: ['https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=1200&q=80'],
+        specs: { transmission: 'Automatic', fuelType: 'Electric', seats: 4, horsepower: 750, topSpeed: '161 mph', luggage: 2 },
+        description: 'Instant launch control with two-speed transmission and Porsche sports car DNA tuned for pure zero-emission thrills.',
+        rating: 4.94,
+        reviewsCount: 39,
+        isAvailable: true
+      },
+      {
+        id: 'car-17',
+        brand: 'Audi',
+        model: 'A3 S-Line Quattro',
+        year: 2024,
+        category: 'Economy',
+        dailyRate: 190,
+        images: ['https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?auto=format&fit=crop&w=1200&q=80'],
+        specs: { transmission: 'Automatic', fuelType: 'Petrol', seats: 5, horsepower: 201, topSpeed: '130 mph', luggage: 2 },
+        description: 'Agile premium compact sedan featuring Audi Virtual Cockpit, leather sport seats, and remarkable fuel efficiency.',
+        rating: 4.85,
+        reviewsCount: 58,
+        isAvailable: true
+      },
+      {
+        id: 'car-18',
+        brand: 'BMW',
+        model: '2 Series Gran Coupe M Sport',
+        year: 2024,
+        category: 'Economy',
+        dailyRate: 210,
+        images: ['https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1200&q=80'],
+        specs: { transmission: 'Automatic', fuelType: 'Petrol', seats: 5, horsepower: 241, topSpeed: '135 mph', luggage: 2 },
+        description: 'Dynamic urban runabout with distinctive four-door coupe silhouette, responsive turbo drive, and modern executive styling.',
+        rating: 4.88,
+        reviewsCount: 46,
+        isAvailable: true
+      }
+    ];
+
+    const DEFAULT_REVIEWS = [
+      {
+        name: 'Julian Sterling',
+        role: 'Tech Executive',
+        car: 'Porsche 911 GT3 RS',
+        rating: 5,
+        comment: 'Handled airport dropoff at SFO with white-glove precision. Car was pristine with only 2,000 miles on the odometer.'
+      },
+      {
+        name: 'Elena Rostova',
+        role: 'Private Equity Director',
+        car: 'Rolls-Royce Ghost',
+        rating: 5,
+        comment: 'Effortless booking process and zero surprise charges. The Ghost made our weekend gala appearance unforgettable.'
+      },
+      {
+        name: 'Marcus Brody',
+        role: 'Automotive Journalist',
+        car: 'Tesla Model S Plaid',
+        rating: 5,
+        comment: 'Mind-bending acceleration and supercharging was completely seamless. DriveLux is easily the best exotic rental service.'
+      }
+    ];
+
+    /* ----------------------------------------------------
+       APPLICATION STATE
+       ---------------------------------------------------- */
+    let rawStoredCars = JSON.parse(localStorage.getItem('dlx_cars'));
+    let cars;
+    if (!rawStoredCars || rawStoredCars.length < DEFAULT_CARS.length) {
+      // Merge: keep custom cars added by user, make sure all default cars exist
+      const existingIds = new Set((rawStoredCars || []).map(c => c.id));
+      const missingDefaults = DEFAULT_CARS.filter(c => !existingIds.has(c.id));
+      cars = [...(rawStoredCars || []), ...missingDefaults];
+      localStorage.setItem('dlx_cars', JSON.stringify(cars));
+    } else {
+      cars = rawStoredCars;
+    }
+
+    let bookings = JSON.parse(localStorage.getItem('dlx_bookings')) || [];
+    let favorites = JSON.parse(localStorage.getItem('dlx_favorites')) || ['car-1', 'car-3', 'car-9'];
+    let currentRole = localStorage.getItem('dlx_role') || 'customer';
+    let currentUser = JSON.parse(localStorage.getItem('dlx_user')) || {
+      name: 'Alexander Vance',
+      email: 'alex@drivelux.com',
+      phone: '+1 (415) 555-0199',
+      license: 'DL-9481940'
+    };
+
+    let activeCategory = 'All';
+    let currentView = 'grid'; // 'grid' or 'list'
+    let selectedCarForBooking = null;
+    let bookingStep = 1;
+    let isAuthSignUp = false;
+
+    // Save helper
+    function saveState() {
+      localStorage.setItem('dlx_cars', JSON.stringify(cars));
+      localStorage.setItem('dlx_bookings', JSON.stringify(bookings));
+      localStorage.setItem('dlx_favorites', JSON.stringify(favorites));
+      localStorage.setItem('dlx_role', currentRole);
+      localStorage.setItem('dlx_user', JSON.stringify(currentUser));
+      updateNavBadges();
+    }
+
+    /* ----------------------------------------------------
+       INITIALIZATION
+       ---------------------------------------------------- */
+    window.addEventListener('DOMContentLoaded', () => {
+      // Set default dates (tomorrow to +3 days)
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const returnDate = new Date(tomorrow);
+      returnDate.setDate(returnDate.getDate() + 3);
+
+      const toISO = (d) => d.toISOString().split('T')[0];
+      
+      const pickupInput = document.getElementById('searchPickupDate');
+      const returnInput = document.getElementById('searchReturnDate');
+      const bookStart = document.getElementById('bookStartDate');
+      const bookEnd = document.getElementById('bookEndDate');
+
+      if (pickupInput) pickupInput.value = toISO(tomorrow);
+      if (returnInput) returnInput.value = toISO(returnDate);
+      if (bookStart) bookStart.value = toISO(tomorrow);
+      if (bookEnd) bookEnd.value = toISO(returnDate);
+
+      renderCategoryTabs();
+      renderFleet();
+      renderReviews();
+      updateNavBadges();
+      lucide.createIcons();
+    });
+
+    /* ----------------------------------------------------
+       NOTIFICATIONS TOAST ENGINE
+       ---------------------------------------------------- */
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      
+      const icon = type === 'success' ? 'check-circle' : type === 'error' ? 'alert-triangle' : 'info';
+      const color = type === 'success' ? 'border-emerald-500/40 text-emerald-300' : type === 'error' ? 'border-red-500/40 text-red-300' : 'border-brand-primary/40 text-brand-primary';
+
+      toast.className = `p-4 rounded-2xl bg-brand-navy border ${color} shadow-2xl flex items-center gap-3 text-xs font-semibold backdrop-blur-xl pointer-events-auto transition-all duration-300 transform translate-y-4 opacity-0`;
+      toast.innerHTML = `
+        <i data-lucide="${icon}" class="w-5 h-5 flex-shrink-0"></i>
+        <span>${message}</span>
+      `;
+      
+      container.appendChild(toast);
+      lucide.createIcons();
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-4', 'opacity-0');
+      }, 50);
+
+      setTimeout(() => {
+        toast.classList.add('translate-y-4', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    /* ----------------------------------------------------
+       FLEET RENDERING & FILTERING
+       ---------------------------------------------------- */
+    const CATEGORIES = ['All', 'Sports', 'Luxury', 'SUV', 'Electric', 'Sedan', 'Economy'];
+
+    function renderCategoryTabs() {
+      const tabs = document.getElementById('categoryTabs');
+      tabs.innerHTML = CATEGORIES.map(cat => `
+        <button 
+          onclick="filterByCategory('${cat}')" 
+          class="px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeCategory === cat ? 'bg-luxury-gradient text-white shadow-md shadow-brand-primary/20' : 'bg-brand-card hover:bg-brand-cardHover border border-brand-border text-gray-400 hover:text-white'}">
+          ${cat === 'All' ? 'Complete Fleet' : cat === 'Economy' ? 'Premium Compact' : cat}
+        </button>
+      `).join('');
+    }
+
+    function filterByCategory(cat) {
+      activeCategory = cat;
+      renderCategoryTabs();
+      applyFleetFilters();
+    }
+
+    function updatePriceFilter(val) {
+      document.getElementById('priceLabel').innerText = `$${val}/day`;
+      applyFleetFilters();
+    }
+
+    function resetFleetFilters() {
+      activeCategory = 'All';
+      document.getElementById('fleetKeyword').value = '';
+      document.getElementById('fleetTransmission').value = 'All';
+      document.getElementById('fleetPriceRange').value = '1500';
+      document.getElementById('priceLabel').innerText = '$1,500/day';
+      document.getElementById('fleetSort').value = 'default';
+      renderCategoryTabs();
+      applyFleetFilters();
+    }
+
+    function applyFleetFilters() {
+      const keyword = document.getElementById('fleetKeyword').value.toLowerCase().trim();
+      const transmission = document.getElementById('fleetTransmission').value;
+      const maxPrice = Number(document.getElementById('fleetPriceRange').value);
+      const sortBy = document.getElementById('fleetSort').value;
+
+      let filtered = cars.filter(c => {
+        const matchesCategory = activeCategory === 'All' || c.category === activeCategory;
+        const matchesKeyword = !keyword || c.brand.toLowerCase().includes(keyword) || c.model.toLowerCase().includes(keyword);
+        const matchesTransmission = transmission === 'All' || c.specs.transmission === transmission;
+        const matchesPrice = c.dailyRate <= maxPrice;
+        return matchesCategory && matchesKeyword && matchesTransmission && matchesPrice;
+      });
+
+      // Sorting
+      if (sortBy === 'price-asc') filtered.sort((a, b) => a.dailyRate - b.dailyRate);
+      if (sortBy === 'price-desc') filtered.sort((a, b) => b.dailyRate - a.dailyRate);
+      if (sortBy === 'horsepower') filtered.sort((a, b) => b.specs.horsepower - a.specs.horsepower);
+      if (sortBy === 'rating') filtered.sort((a, b) => b.rating - a.rating);
+
+      renderFleetCards(filtered);
+    }
+
+    function renderFleet() {
+      applyFleetFilters();
+    }
+
+    function renderFleetCards(carsToRender) {
+      const container = document.getElementById('fleetContainer');
+      const emptyState = document.getElementById('fleetEmptyState');
+
+      if (carsToRender.length === 0) {
+        container.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      emptyState.classList.add('hidden');
+
+      if (currentView === 'grid') {
+        container.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8';
+        container.innerHTML = carsToRender.map(car => {
+          const isFav = favorites.includes(car.id);
+          return `
+            <div class="rounded-3xl glass-panel border border-brand-border overflow-hidden glow-border group flex flex-col justify-between transition-all duration-300">
+              
+              <!-- Card Top Image & Badges -->
+              <div class="relative h-56 overflow-hidden">
+                <img 
+                  src="${car.images[0]}" 
+                  alt="${car.brand} ${car.model}" 
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-brand-card via-transparent to-transparent"></div>
+                
+                <!-- Category Badge -->
+                <span class="absolute top-4 left-4 px-2.5 py-1 rounded-lg bg-brand-navy/90 border border-brand-border text-[10px] uppercase font-bold text-white tracking-wider">
+                  ${car.category}
+                </span>
+
+                <!-- Favorite Heart Button -->
+                <button 
+                  onclick="toggleFavorite('${car.id}')" 
+                  class="absolute top-4 right-4 p-2 rounded-xl bg-brand-navy/80 hover:bg-brand-navy border border-brand-border text-white transition-colors"
+                  title="Save to favorites">
+                  <i data-lucide="heart" class="w-4 h-4 ${isFav ? 'fill-red-500 text-red-500' : 'text-gray-400'}"></i>
+                </button>
+
+                <!-- Availability Badge -->
+                <div class="absolute bottom-3 left-4 flex items-center gap-1.5 text-[11px] font-semibold">
+                  <span class="w-2 h-2 rounded-full ${car.isAvailable ? 'bg-emerald-400' : 'bg-red-400'}"></span>
+                  <span class="${car.isAvailable ? 'text-emerald-400' : 'text-red-400'}">${car.isAvailable ? 'Available Now' : 'Reserved'}</span>
+                </div>
+              </div>
+
+              <!-- Card Content -->
+              <div class="p-6 flex-1 flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-xs text-brand-primary font-bold uppercase tracking-wider">${car.brand}</span>
+                    <div class="flex items-center gap-1 text-xs text-amber-400">
+                      <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i>
+                      <span class="font-bold">${car.rating}</span>
+                      <span class="text-gray-500 text-[10px]">(${car.reviewsCount})</span>
+                    </div>
+                  </div>
+
+                  <h3 class="text-xl font-bold text-white">${car.model}</h3>
+
+                  <!-- Specs Grid -->
+                  <div class="grid grid-cols-3 gap-2 py-4 my-4 border-y border-brand-border/60 text-[11px] text-gray-300">
+                    <div class="flex items-center gap-1.5">
+                      <i data-lucide="zap" class="w-3.5 h-3.5 text-brand-primary"></i>
+                      <span>${car.specs.horsepower} HP</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                      <i data-lucide="gauge" class="w-3.5 h-3.5 text-brand-primary"></i>
+                      <span>${car.specs.transmission.slice(0, 4)}</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                      <i data-lucide="users" class="w-3.5 h-3.5 text-brand-primary"></i>
+                      <span>${car.specs.seats} Seats</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Price and CTA -->
+                <div class="flex items-center justify-between pt-2">
+                  <div>
+                    <span class="text-xs text-gray-400">From</span>
+                    <p class="text-2xl font-black text-white font-display">$${car.dailyRate}<span class="text-xs text-gray-400 font-normal">/day</span></p>
+                  </div>
+                  
+                  <button 
+                    onclick="openBookingModal('${car.id}')"
+                    ${!car.isAvailable ? 'disabled' : ''} 
+                    class="px-5 py-2.5 rounded-xl bg-luxury-gradient text-white text-xs font-bold shadow-lg shadow-brand-primary/20 hover:opacity-95 active:scale-95 disabled:opacity-40 transition-all flex items-center gap-1.5">
+                    <span>${car.isAvailable ? 'Book Vehicle' : 'Unavailable'}</span>
+                    <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          `;
+        }).join('');
+      } else {
+        // List View
+        container.className = 'space-y-4';
+        container.innerHTML = carsToRender.map(car => {
+          const isFav = favorites.includes(car.id);
+          return `
+            <div class="rounded-2xl glass-panel border border-brand-border p-4 flex flex-col md:flex-row items-center justify-between gap-6 glow-border">
+              <div class="flex items-center gap-5 w-full md:w-auto">
+                <img src="${car.images[0]}" alt="${car.model}" class="w-28 h-20 rounded-xl object-cover">
+                <div>
+                  <span class="text-[10px] text-brand-primary font-bold uppercase tracking-wider">${car.brand} • ${car.category}</span>
+                  <h3 class="text-lg font-bold text-white">${car.model} (${car.year})</h3>
+                  <p class="text-xs text-gray-400">${car.specs.horsepower} HP • ${car.specs.transmission} • ${car.specs.seats} Seats</p>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between w-full md:w-auto gap-8">
+                <div class="text-right">
+                  <span class="text-xl font-black text-white font-display">$${car.dailyRate}</span>
+                  <span class="text-xs text-gray-400 block">/day</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button onclick="toggleFavorite('${car.id}')" class="p-2.5 rounded-xl bg-brand-navy border border-brand-border text-white">
+                    <i data-lucide="heart" class="w-4 h-4 ${isFav ? 'fill-red-500 text-red-500' : 'text-gray-400'}"></i>
+                  </button>
+                  <button onclick="openBookingModal('${car.id}')" ${!car.isAvailable ? 'disabled' : ''} class="px-5 py-2.5 rounded-xl bg-luxury-gradient text-white text-xs font-bold disabled:opacity-40">
+                    Reserve
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      lucide.createIcons();
+    }
+
+    function toggleFleetView(view) {
+      currentView = view;
+      document.getElementById('viewGridBtn').className = view === 'grid' ? 'p-2 rounded-lg bg-brand-card text-white' : 'p-2 rounded-lg text-gray-400 hover:text-white';
+      document.getElementById('viewListBtn').className = view === 'list' ? 'p-2 rounded-lg bg-brand-card text-white' : 'p-2 rounded-lg text-gray-400 hover:text-white';
+      applyFleetFilters();
+    }
+
+    function toggleFavorite(carId) {
+      if (favorites.includes(carId)) {
+        favorites = favorites.filter(id => id !== carId);
+        showToast('Vehicle removed from saved favorites.');
+      } else {
+        favorites.push(carId);
+        showToast('Vehicle added to saved favorites!', 'success');
+      }
+      saveState();
+      applyFleetFilters();
+      renderFavoritesList();
+    }
+
+    /* ----------------------------------------------------
+       HERO SEARCH ACTION
+       ---------------------------------------------------- */
+    function handleHeroSearch(e) {
+      e.preventDefault();
+      const category = document.getElementById('searchCategory').value;
+      if (category !== 'All') {
+        activeCategory = category;
+        renderCategoryTabs();
+      }
+      applyFleetFilters();
+      document.getElementById('fleet').scrollIntoView({ behavior: 'smooth' });
+      showToast('Search completed. Matching vehicles loaded below.');
+    }
+
+    /* ----------------------------------------------------
+       BOOKING MODAL FLOW & ENGINE
+       ---------------------------------------------------- */
+    function openBookingModal(carId) {
+      const car = cars.find(c => c.id === carId);
+      if (!car) return;
+
+      selectedCarForBooking = car;
+      bookingStep = 1;
+
+      // Populate details
+      document.getElementById('modalCarTitle').innerText = `${car.brand} ${car.model}`;
+      document.getElementById('modalCarYear').innerText = `${car.year} Model • ${car.category} Collection`;
+      document.getElementById('modalCarBadge').innerText = car.category;
+      document.getElementById('modalCarImage').src = car.images[0];
+      document.getElementById('modalCarDescription').innerText = car.description;
+      document.getElementById('modalDailyRate').innerText = `$${car.dailyRate}`;
+
+      document.getElementById('modalSpecPower').innerText = `${car.specs.horsepower} HP`;
+      document.getElementById('modalSpecTrans').innerText = car.specs.transmission;
+      document.getElementById('modalSpecFuel').innerText = car.specs.fuelType;
+      document.getElementById('modalSpecSpeed').innerText = car.specs.topSpeed;
+
+      // Prefill user details
+      document.getElementById('driverName').value = currentUser.name;
+      document.getElementById('driverEmail').value = currentUser.email;
+      document.getElementById('driverPhone').value = currentUser.phone;
+      document.getElementById('driverLicense').value = currentUser.license;
+
+      updateBookingStepUI();
+      calculateBookingPrice();
+
+      document.getElementById('bookingModal').classList.remove('hidden');
+    }
+
+    function closeBookingModal() {
+      document.getElementById('bookingModal').classList.add('hidden');
+    }
+
+    function updateBookingStepUI() {
+      // Step Views
+      document.getElementById('bookingStep1').classList.add('hidden');
+      document.getElementById('bookingStep2').classList.add('hidden');
+      document.getElementById('bookingStep3').classList.add('hidden');
+      document.getElementById('bookingSuccessState').classList.add('hidden');
+      document.getElementById('modalActionFooter').classList.remove('hidden');
+
+      if (bookingStep === 1) {
+        document.getElementById('bookingStep1').classList.remove('hidden');
+        document.getElementById('stepTitle').innerText = 'Rental Dates & Locations';
+        document.getElementById('stepCounter').innerText = 'Step 1 of 3';
+        document.getElementById('stepNumberPill').innerText = '1';
+        document.getElementById('modalPrevBtn').classList.add('hidden');
+        document.getElementById('modalNextBtn').innerHTML = `<span>Continue to Driver Details</span> <i data-lucide="chevron-right" class="w-4 h-4"></i>`;
+      } else if (bookingStep === 2) {
+        document.getElementById('bookingStep2').classList.remove('hidden');
+        document.getElementById('stepTitle').innerText = 'Driver Verification';
+        document.getElementById('stepCounter').innerText = 'Step 2 of 3';
+        document.getElementById('stepNumberPill').innerText = '2';
+        document.getElementById('modalPrevBtn').classList.remove('hidden');
+        document.getElementById('modalNextBtn').innerHTML = `<span>Proceed to Payment</span> <i data-lucide="chevron-right" class="w-4 h-4"></i>`;
+      } else if (bookingStep === 3) {
+        document.getElementById('bookingStep3').classList.remove('hidden');
+        document.getElementById('stepTitle').innerText = 'Secure Payment Verification';
+        document.getElementById('stepCounter').innerText = 'Step 3 of 3';
+        document.getElementById('stepNumberPill').innerText = '3';
+        document.getElementById('modalPrevBtn').classList.remove('hidden');
+        document.getElementById('modalNextBtn').innerHTML = `<span>Verify & Confirm Reservation</span> <i data-lucide="check" class="w-4 h-4"></i>`;
+      } else if (bookingStep === 4) {
+        document.getElementById('bookingSuccessState').classList.remove('hidden');
+        document.getElementById('modalActionFooter').classList.add('hidden');
+      }
+
+      lucide.createIcons();
+    }
+
+    function nextBookingStep() {
+      if (bookingStep === 1) {
+        const start = new Date(document.getElementById('bookStartDate').value);
+        const end = new Date(document.getElementById('bookEndDate').value);
+        if (isNaN(start.getTime()) || isNaN(end.getTime()) || start >= end) {
+          showToast('Please select a valid rental date range (Return must be after Pickup).', 'error');
+          return;
+        }
+
+        // Overlapping reservation check
+        const conflict = bookings.find(b => 
+          b.carId === selectedCarForBooking.id && 
+          b.status !== 'cancelled' && 
+          ((start >= new Date(b.pickupDate) && start <= new Date(b.returnDate)) ||
+           (end >= new Date(b.pickupDate) && end <= new Date(b.returnDate)))
+        );
+
+        if (conflict) {
+          showToast('This vehicle already has a confirmed booking for those dates.', 'error');
+          return;
+        }
+
+        bookingStep = 2;
+        updateBookingStepUI();
+      } else if (bookingStep === 2) {
+        const name = document.getElementById('driverName').value.trim();
+        const email = document.getElementById('driverEmail').value.trim();
+        const phone = document.getElementById('driverPhone').value.trim();
+        if (!name || !email || !phone) {
+          showToast('Please fill out all required driver credentials.', 'error');
+          return;
+        }
+        bookingStep = 3;
+        updateBookingStepUI();
+      } else if (bookingStep === 3) {
+        completeBookingTransaction();
+      }
+    }
+
+    function prevBookingStep() {
+      if (bookingStep > 1) {
+        bookingStep--;
+        updateBookingStepUI();
+      }
+    }
+
+    function calculateBookingPrice() {
+      if (!selectedCarForBooking) return;
+      const start = new Date(document.getElementById('bookStartDate').value);
+      const end = new Date(document.getElementById('bookEndDate').value);
+
+      let days = 1;
+      if (!isNaN(start.getTime()) && !isNaN(end.getTime()) && end > start) {
+        const diffMs = end - start;
+        days = Math.max(1, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+      }
+
+      const baseRate = selectedCarForBooking.dailyRate;
+      const subtotal = baseRate * days;
+      const tax = Math.round(subtotal * 0.12);
+      const insurance = 40 * days;
+      const total = subtotal + tax + insurance;
+
+      document.getElementById('calcDuration').innerText = `${days} Day${days > 1 ? 's' : ''}`;
+      document.getElementById('calcSubtotal').innerText = `$${subtotal.toLocaleString()}`;
+      document.getElementById('calcTax').innerText = `$${tax.toLocaleString()}`;
+      document.getElementById('calcInsurance').innerText = `$${insurance.toLocaleString()}`;
+      document.getElementById('calcTotal').innerText = `$${total.toLocaleString()}`;
+
+      return { days, baseRate, subtotal, tax, insurance, total };
+    }
+
+    function completeBookingTransaction() {
+      const pricing = calculateBookingPrice();
+      const refCode = `DLX-${Date.now().toString(36).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`;
+
+      const newBooking = {
+        id: 'bk_' + Date.now(),
+        reference: refCode,
+        carId: selectedCarForBooking.id,
+        carBrand: selectedCarForBooking.brand,
+        carModel: selectedCarForBooking.model,
+        carImage: selectedCarForBooking.images[0],
+        pickupDate: document.getElementById('bookStartDate').value,
+        returnDate: document.getElementById('bookEndDate').value,
+        location: document.getElementById('bookPickupLoc').value,
+        customerName: document.getElementById('driverName').value,
+        customerEmail: document.getElementById('driverEmail').value,
+        customerPhone: document.getElementById('driverPhone').value,
+        pricing: pricing,
+        status: 'confirmed',
+        paymentStatus: 'paid',
+        createdAt: new Date().toISOString()
+      };
+
+      bookings.unshift(newBooking);
+      saveState();
+
+      document.getElementById('confirmedRefCode').innerText = refCode;
+      bookingStep = 4;
+      updateBookingStepUI();
+      showToast('Payment verified! Vehicle reserved.', 'success');
+      renderBookingsList();
+    }
+
+    /* ----------------------------------------------------
+       CUSTOMER BOOKINGS & CANCELLATION
+       ---------------------------------------------------- */
+    function openBookingsModal() {
+      renderBookingsList();
+      document.getElementById('bookingsModal').classList.remove('hidden');
+    }
+
+    function closeBookingsModal() {
+      document.getElementById('bookingsModal').classList.add('hidden');
+    }
+
+    function renderBookingsList() {
+      const container = document.getElementById('bookingsList');
+      if (bookings.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12 text-gray-500">
+            <i data-lucide="calendar" class="w-10 h-10 mx-auto mb-2"></i>
+            <p class="text-sm text-gray-300 font-semibold">No active reservations found.</p>
+            <p class="text-xs text-gray-500">Explore the luxury fleet and reserve your next driving experience.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = bookings.map(b => {
+        const isCancelled = b.status === 'cancelled';
+        return `
+          <div class="p-4 rounded-2xl bg-brand-navy border border-brand-border flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-4 w-full sm:w-auto">
+              <img src="${b.carImage}" alt="${b.carModel}" class="w-20 h-14 rounded-xl object-cover">
+              <div>
+                <span class="text-[10px] font-mono text-brand-primary font-bold">${b.reference}</span>
+                <h4 class="text-sm font-bold text-white">${b.carBrand} ${b.carModel}</h4>
+                <p class="text-xs text-gray-400">${b.pickupDate} → ${b.returnDate}</p>
+                <span class="text-[10px] text-gray-500">${b.location}</span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-4">
+              <div class="text-right">
+                <span class="text-sm font-bold text-white font-display">$${b.pricing.total.toLocaleString()}</span>
+                <span class="block text-[10px] uppercase font-bold ${isCancelled ? 'text-red-400' : 'text-emerald-400'}">
+                  ${b.status}
+                </span>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button onclick="prepareAndPrintReceipt('${b.id}')" class="p-2 rounded-xl bg-brand-card hover:bg-brand-cardHover border border-brand-border text-gray-300 hover:text-white" title="Print Receipt">
+                  <i data-lucide="printer" class="w-4 h-4"></i>
+                </button>
+                ${!isCancelled ? `
+                  <button onclick="cancelReservation('${b.id}')" class="px-3 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 text-xs font-bold transition-colors">
+                    Cancel
+                  </button>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function cancelReservation(bookingId) {
+      const b = bookings.find(item => item.id === bookingId);
+      if (!b) return;
+
+      b.status = 'cancelled';
+      b.paymentStatus = 'refunded';
+      saveState();
+      renderBookingsList();
+      showToast('Reservation cancelled. Digital refund initiated.', 'info');
+    }
+
+    function prepareAndPrintReceipt(bookingId) {
+      const b = bookings.find(item => item.id === bookingId);
+      if (!b) return;
+
+      const container = document.getElementById('printableReceiptContent');
+      container.innerHTML = `
+        <div style="font-size: 12px; line-height: 1.6;">
+          <p><strong>Booking Reference:</strong> ${b.reference}</p>
+          <p><strong>Customer Name:</strong> ${b.customerName}</p>
+          <p><strong>Email / Contact:</strong> ${b.customerEmail} | ${b.customerPhone}</p>
+          <p><strong>Vehicle:</strong> ${b.carBrand} ${b.carModel}</p>
+          <p><strong>Pickup Hub:</strong> ${b.location}</p>
+          <p><strong>Rental Window:</strong> ${b.pickupDate} to ${b.returnDate} (${b.pricing.days} Days)</p>
+          <hr style="margin: 15px 0; border: none; border-top: 1px dashed #aaa;" />
+          <p>Subtotal: $${b.pricing.subtotal.toLocaleString()}</p>
+          <p>Luxury Tax (12%): $${b.pricing.tax.toLocaleString()}</p>
+          <p>Collision Waiver (CDW): $${b.pricing.insurance.toLocaleString()}</p>
+          <h3 style="font-size: 16px; font-weight: bold; margin-top: 10px;">Total Paid: $${b.pricing.total.toLocaleString()}</h3>
+          <p><strong>Payment Status:</strong> ${b.paymentStatus.toUpperCase()} (Captured via Secure Test Gateway)</p>
+        </div>
+      `;
+      window.print();
+    }
+
+    function printCurrentInvoice() {
+      if (bookings.length > 0) {
+        prepareAndPrintReceipt(bookings[0].id);
+      }
+    }
+
+    /* ----------------------------------------------------
+       FAVORITES WISHLIST MODAL
+       ---------------------------------------------------- */
+    function openFavoritesModal() {
+      renderFavoritesList();
+      document.getElementById('favoritesModal').classList.remove('hidden');
+    }
+
+    function closeFavoritesModal() {
+      document.getElementById('favoritesModal').classList.add('hidden');
+    }
+
+    function renderFavoritesList() {
+      const container = document.getElementById('favoritesList');
+      const favCars = cars.filter(c => favorites.includes(c.id));
+
+      if (favCars.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-10 text-gray-500">
+            <i data-lucide="heart" class="w-8 h-8 mx-auto mb-2 text-gray-600"></i>
+            <p class="text-sm text-gray-300">Your wishlist is currently empty.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = favCars.map(car => `
+        <div class="p-3.5 rounded-2xl bg-brand-navy border border-brand-border flex items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <img src="${car.images[0]}" alt="${car.model}" class="w-16 h-12 rounded-lg object-cover">
+            <div>
+              <h4 class="text-xs font-bold text-white">${car.brand} ${car.model}</h4>
+              <p class="text-[11px] text-brand-primary font-bold">$${car.dailyRate}/day</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="closeFavoritesModal(); openBookingModal('${car.id}')" class="px-3 py-1.5 rounded-lg bg-luxury-gradient text-white text-xs font-bold">
+              Book
+            </button>
+            <button onclick="toggleFavorite('${car.id}')" class="p-1.5 rounded-lg text-gray-400 hover:text-red-400">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    /* ----------------------------------------------------
+       AI CAR MATCHMAKER ENGINE
+       ---------------------------------------------------- */
+    function openAIModal() {
+      resetAIModal();
+      document.getElementById('aiModal').classList.remove('hidden');
+    }
+
+    function closeAIModal() {
+      document.getElementById('aiModal').classList.add('hidden');
+    }
+
+    function resetAIModal() {
+      document.getElementById('aiFormContainer').classList.remove('hidden');
+      document.getElementById('aiResultsContainer').classList.add('hidden');
+    }
+
+    function runAIMatchmaking() {
+      const budget = Number(document.getElementById('aiBudget').value);
+      const intent = document.getElementById('aiIntent').value;
+      const seats = Number(document.getElementById('aiSeats').value);
+      const trans = document.getElementById('aiTransmission').value;
+      const fuel = document.getElementById('aiPowertrain').value;
+
+      // Heuristic Scoring Algorithm
+      const scored = cars.map(car => {
+        let score = 50;
+        const reasons = [];
+
+        // Budget check
+        if (car.dailyRate <= budget) {
+          score += 25;
+          reasons.push(`Under your $${budget} daily budget limit.`);
+        } else if (car.dailyRate <= budget * 1.2) {
+          score += 10;
+          reasons.push(`Slightly above target ($${car.dailyRate}/day) but delivers high luxury tier value.`);
+        }
+
+        // Seats match
+        if (car.specs.seats >= seats) {
+          score += 15;
+          reasons.push(`Comfortably accommodates ${seats}+ passengers with ${car.specs.seats} seats.`);
+        }
+
+        // Transmission
+        if (trans !== 'Any' && car.specs.transmission === trans) {
+          score += 10;
+          reasons.push(`Equipped with requested ${trans} gearbox.`);
+        }
+
+        // Fuel
+        if (fuel !== 'Any' && car.specs.fuelType === fuel) {
+          score += 10;
+          reasons.push(`Powered by optimal ${fuel} powertrain.`);
+        }
+
+        // Mission match
+        if (intent === 'track' && (car.category === 'Sports' || car.specs.horsepower >= 500)) {
+          score += 20;
+          reasons.push(`Massive performance output (${car.specs.horsepower} HP) designed for spirited track & canyon driving.`);
+        } else if (intent === 'city' && (car.category === 'Electric' || car.category === 'Sedan')) {
+          score += 20;
+          reasons.push('Quiet luxury, seamless automatic transit, and effortless maneuverability.');
+        } else if (intent === 'family' && (car.category === 'SUV' || car.specs.seats >= 5)) {
+          score += 20;
+          reasons.push('Expansive cabin space, maximum luggage volume, and ultra-safe highway poise.');
+        } else if (intent === 'status' && (car.category === 'Luxury' || car.dailyRate >= 1000)) {
+          score += 25;
+          reasons.push('Unrivaled red-carpet status, bespoke prestige, and commanding arrival presence.');
+        }
+
+        return { car, score: Math.min(99, score), reasons };
+      });
+
+      scored.sort((a, b) => b.score - a.score);
+      const topMatches = scored.slice(0, 3);
+
+      const listContainer = document.getElementById('aiMatchesList');
+      listContainer.innerHTML = topMatches.map(({ car, score, reasons }) => `
+        <div class="p-4 rounded-2xl bg-brand-navy border border-brand-border flex flex-col sm:flex-row items-center justify-between gap-4">
+          <img src="${car.images[0]}" alt="${car.model}" class="w-full sm:w-28 h-20 rounded-xl object-cover">
+          <div class="flex-1">
+            <div class="flex items-center gap-2">
+              <h4 class="text-sm font-bold text-white">${car.brand} ${car.model}</h4>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-brand-primary/20 text-brand-primary font-bold">
+                ${score}% Compatibility
+              </span>
+            </div>
+            <p class="text-xs text-brand-primary font-bold mt-0.5">$${car.dailyRate}/day</p>
+            <ul class="text-[11px] text-gray-400 mt-1.5 space-y-0.5">
+              ${reasons.slice(0, 2).map(r => `<li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3 h-3 text-emerald-400"></i> ${r}</li>`).join('')}
+            </ul>
+          </div>
+          <button onclick="closeAIModal(); openBookingModal('${car.id}')" class="w-full sm:w-auto px-4 py-2 rounded-xl bg-luxury-gradient text-white text-xs font-bold">
+            Select Car
+          </button>
+        </div>
+      `).join('');
+
+      document.getElementById('aiFormContainer').classList.add('hidden');
+      document.getElementById('aiResultsContainer').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    /* ----------------------------------------------------
+       ADMIN FLEET & BOOKING MANAGEMENT
+       ---------------------------------------------------- */
+    function switchRole(role) {
+      currentRole = role;
+      saveState();
+
+      const custBtn = document.getElementById('roleCustomerBtn');
+      const adminBtn = document.getElementById('roleAdminBtn');
+
+      if (role === 'admin') {
+        adminBtn.className = 'px-3 py-1.5 rounded-lg font-bold transition-all bg-brand-purple text-white shadow-sm';
+        custBtn.className = 'px-3 py-1.5 rounded-lg font-bold text-gray-400 hover:text-white transition-all';
+        openAdminModal();
+        showToast('Switched to Fleet Administrator Mode', 'info');
+      } else {
+        custBtn.className = 'px-3 py-1.5 rounded-lg font-bold transition-all bg-brand-primary text-white shadow-sm';
+        adminBtn.className = 'px-3 py-1.5 rounded-lg font-bold text-gray-400 hover:text-white transition-all';
+        closeAdminModal();
+        showToast('Returned to Client Browsing Mode', 'info');
+      }
+    }
+
+    function openAdminModal() {
+      updateAdminDashboard();
+      document.getElementById('adminModal').classList.remove('hidden');
+    }
+
+    function closeAdminModal() {
+      document.getElementById('adminModal').classList.add('hidden');
+      if (currentRole === 'admin') {
+        switchRole('customer');
+      }
+    }
+
+    function switchAdminTab(tab) {
+      if (tab === 'cars') {
+        document.getElementById('adminTabCars').classList.remove('hidden');
+        document.getElementById('adminTabBookings').classList.add('hidden');
+        document.getElementById('adminTabCarsBtn').className = 'text-brand-primary border-b-2 border-brand-primary pb-2';
+        document.getElementById('adminTabBookingsBtn').className = 'text-gray-400 hover:text-white pb-2';
+      } else {
+        document.getElementById('adminTabCars').classList.add('hidden');
+        document.getElementById('adminTabBookings').classList.remove('hidden');
+        document.getElementById('adminTabBookingsBtn').className = 'text-brand-primary border-b-2 border-brand-primary pb-2';
+        document.getElementById('adminTabCarsBtn').className = 'text-gray-400 hover:text-white pb-2';
+      }
+    }
+
+    function updateAdminDashboard() {
+      // Calculate revenue
+      const totalRevenue = bookings
+        .filter(b => b.paymentStatus === 'paid')
+        .reduce((sum, b) => sum + (b.pricing?.total || 0), 0);
+
+      const availableCount = cars.filter(c => c.isAvailable).length;
+
+      document.getElementById('kpiRevenue').innerText = `$${totalRevenue.toLocaleString()}`;
+      document.getElementById('kpiFleetCount').innerText = cars.length;
+      document.getElementById('kpiAvailableCount').innerText = `${availableCount} Available`;
+      document.getElementById('kpiBookingsCount').innerText = bookings.length;
+
+      renderAdminCarsTable();
+      renderAdminBookingsTable();
+    }
+
+    function renderAdminCarsTable() {
+      const tbody = document.getElementById('adminCarsTableBody');
+      tbody.innerHTML = cars.map(car => `
+        <tr class="hover:bg-brand-navy/60 transition-colors">
+          <td class="py-3 px-4">
+            <div class="flex items-center gap-3">
+              <img src="${car.images[0]}" alt="${car.model}" class="w-12 h-9 rounded-lg object-cover">
+              <div>
+                <span class="font-bold text-white">${car.brand} ${car.model}</span>
+                <span class="block text-[10px] text-gray-500">${car.year}</span>
+              </div>
+            </div>
+          </td>
+          <td class="py-3 px-4 font-semibold">${car.category}</td>
+          <td class="py-3 px-4 font-bold text-white">$${car.dailyRate}</td>
+          <td class="py-3 px-4 text-[11px] text-gray-400">${car.specs.horsepower} HP • ${car.specs.transmission}</td>
+          <td class="py-3 px-4">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${car.isAvailable ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}">
+              ${car.isAvailable ? 'Available' : 'Reserved'}
+            </span>
+          </td>
+          <td class="py-3 px-4 text-right space-x-2">
+            <button onclick="toggleCarAvailability('${car.id}')" class="px-2.5 py-1 rounded-lg bg-brand-navy border border-brand-border text-[10px] font-semibold text-gray-300 hover:text-white">
+              Toggle State
+            </button>
+            <button onclick="deleteCarFromFleet('${car.id}')" class="px-2.5 py-1 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 text-[10px] font-bold">
+              Archive
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderAdminBookingsTable() {
+      const tbody = document.getElementById('adminBookingsTableBody');
+      if (bookings.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-gray-500">No booking records found in database.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = bookings.map(b => `
+        <tr class="hover:bg-brand-navy/60 transition-colors">
+          <td class="py-3 px-4 font-mono font-bold text-brand-primary">${b.reference}</td>
+          <td class="py-3 px-4">
+            <div class="font-semibold text-white">${b.customerName}</div>
+            <div class="text-[10px] text-gray-500">${b.customerEmail}</div>
+          </td>
+          <td class="py-3 px-4 text-white">${b.carBrand} ${b.carModel}</td>
+          <td class="py-3 px-4 text-[11px] text-gray-400">${b.pickupDate} → ${b.returnDate}</td>
+          <td class="py-3 px-4 font-bold text-white">$${b.pricing?.total || 0}</td>
+          <td class="py-3 px-4">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${b.status === 'confirmed' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}">
+              ${b.status}
+            </span>
+          </td>
+          <td class="py-3 px-4 text-right">
+            ${b.status !== 'cancelled' ? `
+              <button onclick="cancelReservation('${b.id}'); updateAdminDashboard();" class="text-red-400 hover:underline text-[10px] font-bold">
+                Force Cancel
+              </button>
+            ` : '<span class="text-gray-600 text-[10px]">Refunded</span>'}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function toggleCarAvailability(carId) {
+      const car = cars.find(c => c.id === carId);
+      if (!car) return;
+      car.isAvailable = !car.isAvailable;
+      saveState();
+      updateAdminDashboard();
+      renderFleet();
+      showToast(`Vehicle availability toggled for ${car.model}.`);
+    }
+
+    function deleteCarFromFleet(carId) {
+      cars = cars.filter(c => c.id !== carId);
+      saveState();
+      updateAdminDashboard();
+      renderFleet();
+      showToast('Vehicle archived from fleet master catalog.');
+    }
+
+    function openAddCarModal() {
+      document.getElementById('addCarModal').classList.remove('hidden');
+    }
+
+    function closeAddCarModal() {
+      document.getElementById('addCarModal').classList.add('hidden');
+    }
+
+    function handleAddNewCar(e) {
+      e.preventDefault();
+      const newCar = {
+        id: 'car-' + Date.now(),
+        brand: document.getElementById('newCarBrand').value.trim(),
+        model: document.getElementById('newCarModel').value.trim(),
+        year: 2024,
+        category: document.getElementById('newCarCategory').value,
+        dailyRate: Number(document.getElementById('newCarDailyRate').value),
+        images: [document.getElementById('newCarImage').value.trim()],
+        specs: {
+          transmission: document.getElementById('newCarTrans').value,
+          fuelType: 'Petrol',
+          seats: Number(document.getElementById('newCarSeats').value),
+          horsepower: Number(document.getElementById('newCarHP').value),
+          topSpeed: '190 mph',
+          luggage: 2
+        },
+        description: document.getElementById('newCarDesc').value.trim() || 'Prestige automotive excellence.',
+        rating: 5.0,
+        reviewsCount: 1,
+        isAvailable: true
+      };
+
+      cars.unshift(newCar);
+      saveState();
+      closeAddCarModal();
+      updateAdminDashboard();
+      renderFleet();
+      showToast('New exotic vehicle successfully published to catalog!', 'success');
+    }
+
+    function exportCSVReport() {
+      if (bookings.length === 0) {
+        showToast('No booking transactions available for CSV export.', 'error');
+        return;
+      }
+
+      let csv = 'Reference,Client,Email,Phone,Vehicle,Pickup,Return,Total,Status,Payment\n';
+      bookings.forEach(b => {
+        csv += `"${b.reference}","${b.customerName}","${b.customerEmail}","${b.customerPhone}","${b.carBrand} ${b.carModel}","${b.pickupDate}","${b.returnDate}","${b.pricing?.total || 0}","${b.status}","${b.paymentStatus}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.setAttribute('href', url);
+      a.setAttribute('download', `drivelux_bookings_${Date.now()}.csv`);
+      a.click();
+      showToast('CSV Report generated and downloaded.', 'success');
+    }
+
+    /* ----------------------------------------------------
+       AUTH MODAL FLOW
+       ---------------------------------------------------- */
+    function openAuthModal() {
+      document.getElementById('authModal').classList.remove('hidden');
+    }
+
+    function closeAuthModal() {
+      document.getElementById('authModal').classList.add('hidden');
+    }
+
+    function toggleAuthMode() {
+      isAuthSignUp = !isAuthSignUp;
+      const title = document.getElementById('authModalTitle');
+      const submitBtn = document.getElementById('authSubmitBtn');
+      const nameField = document.getElementById('authNameField');
+      const toggleText = document.getElementById('authToggleText');
+      const toggleBtn = document.getElementById('authToggleBtn');
+
+      if (isAuthSignUp) {
+        title.innerText = 'Create VIP Profile';
+        submitBtn.innerText = 'Register Account';
+        nameField.classList.remove('hidden');
+        toggleText.innerText = 'Already have a profile?';
+        toggleBtn.innerText = 'Sign In';
+      } else {
+        title.innerText = 'Client Authentication';
+        submitBtn.innerText = 'Sign In';
+        nameField.classList.add('hidden');
+        toggleText.innerText = "Don't have a verified profile?";
+        toggleBtn.innerText = 'Sign Up';
+      }
+    }
+
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('authEmailInput').value.trim();
+      const name = isAuthSignUp ? document.getElementById('authNameInput').value.trim() : 'Alexander Vance';
+
+      currentUser.name = name || 'Alexander Vance';
+      currentUser.email = email;
+      saveState();
+
+      document.getElementById('authButtonText').innerText = currentUser.name.split(' ')[0];
+      closeAuthModal();
+      showToast(`Welcome, ${currentUser.name}! Profile authenticated.`, 'success');
+    }
+
+    /* ----------------------------------------------------
+       REVIEWS SECTION
+       ---------------------------------------------------- */
+    function renderReviews() {
+      const container = document.getElementById('reviewsContainer');
+      container.innerHTML = DEFAULT_REVIEWS.map(r => `
+        <div class="p-6 rounded-2xl glass-panel border border-brand-border flex flex-col justify-between">
+          <p class="text-xs text-gray-300 italic mb-6">"${r.comment}"</p>
+          <div class="flex items-center justify-between border-t border-brand-border/60 pt-4">
+            <div>
+              <h4 class="text-sm font-bold text-white">${r.name}</h4>
+              <span class="text-[10px] text-gray-400">${r.role} • <span class="text-brand-primary">${r.car}</span></span>
+            </div>
+            <div class="flex text-amber-400">
+              ${'<i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i>'.repeat(r.rating)}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateNavBadges() {
+      const badge = document.getElementById('bookingCountBadge');
+      if (badge) {
+        badge.innerText = bookings.filter(b => b.status === 'confirmed').length;
+      }
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobileMenu');
+      menu.classList.toggle('hidden');
+    }
+  </script>
+</body>
+</html>
